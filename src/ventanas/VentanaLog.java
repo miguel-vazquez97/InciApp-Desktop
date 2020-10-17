@@ -305,7 +305,14 @@ public class VentanaLog extends JFrame {
    
     //      BOTON REGISTRAR
     private void boton_registrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_registrarMouseClicked
-
+        if(conectado_servidor){
+            VentanaRegistrarUsuario ventanaRegistrar = new VentanaRegistrarUsuario(this, true, app, 1);
+            ventanaRegistrar.setVisible(true);
+        }else{
+            JOptionPane.showMessageDialog(this, "Debe conectarse al servidor", "¡Atención!", 0);
+        }
+        
+        boton_registrar.setEnabled(true);
     }//GEN-LAST:event_boton_registrarMouseClicked
 
     //      BOTON CONECTAR SERVIDOR
