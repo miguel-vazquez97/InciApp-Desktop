@@ -14,6 +14,8 @@ import java.net.Socket;
 public class Aplicacion {
     
     private Socket socket;
+    private String correo;
+    private String nombreAdmin;
 
     public Aplicacion() {
     }
@@ -25,5 +27,21 @@ public class Aplicacion {
     public void setSocket(Socket socket) {
         this.socket = socket;
     }   
-    
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
+    public String getNombreAdmin() {
+        return nombreAdmin;
+    }
+
+    public void setNombreAdmin(String nombreAdmin) {
+        this.nombreAdmin = nombreAdmin;
+    }
+
 }

@@ -4,16 +4,20 @@ import aplicacion.Aplicacion;
 import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.SwingWorker;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 
 /**
@@ -36,6 +40,9 @@ public class VentanaLog extends JFrame {
     protected String envioServidor;
     protected String[] resServidor;
     protected byte[] respuestaServidorByte;   
+    
+    protected VentanaPrincipal ventanaPrincipal;
+    protected String correoAdmin;
     
     
     public VentanaLog() {
@@ -66,11 +73,22 @@ public class VentanaLog extends JFrame {
             //leemos las propiedades
             properties.load(leerArchivo);             
             
-            //obtenemos las propiedades que queremos (IP y PUERTO)                     
+            //obtenemos las propiedades que queremos (IP y PUERTO)
+            String correo_properties = properties.getProperty("correo");
+            String contrasena_properties = properties.getProperty("contrasena");
             String ip_properties = properties.getProperty("ip");
             String puerto_text_properties = properties.getProperty("puerto");
             
-            leerArchivo.close();         
+            leerArchivo.close();     
+            
+            //si teniamos introducida anteriormente correo y contraseña
+            //lo recuperaremos del archivo properties e insertaremos en sus campos de la ventana de log
+            if((correo_properties!=null &&!correo_properties.equals("null")) && (contrasena_properties!=null && !contrasena_properties.equals("null"))){
+                text_correo.setText(correo_properties);
+                text_contrasena.setText(contrasena_properties);
+                //guardaremos en nuestra clase Aplicacion el correo con el que se inicia sesion
+                correoAdmin=correo_properties;
+            }
             
             //probamos a conectarnos al servidor con la ip y el puerto introducidos en la anterior sesión si existe en nuestro properties
             if((ip_properties!=null && puerto_text_properties!=null) && (!ip_properties.equals("null") && !puerto_text_properties.equals("null"))){
@@ -309,7 +327,7 @@ public class VentanaLog extends JFrame {
             VentanaRegistrarUsuario ventanaRegistrar = new VentanaRegistrarUsuario(this, true, app, 1);
             ventanaRegistrar.setVisible(true);
         }else{
-            JOptionPane.showMessageDialog(this, "Debe conectarse al servidor", "¡Atención!", 0);
+            JOptionPane.showMessageDialog(this, "Debe conectarse al servidor", "¡Atención!", 1);
         }
         
         boton_registrar.setEnabled(true);
@@ -377,10 +395,130 @@ public class VentanaLog extends JFrame {
     //      BOTON LOGIN
     private void boton_loginMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_loginMouseClicked
  
+        SwingWorker worker = new SwingWorker<Void, Void>(){
+            @Override
+            protected Void doInBackground() throws Exception {
+                error_log.setVisible(false);
+                error_log_sesion_inciada.setVisible(false);             
+                
+                if(conectado_servidor){  
+                    
+                    boton_login.setVisible(false);
+                    progressBar.setVisible(true);
+
+                    boolean log_admin = true;
+                    Border border_boton_rojo = BorderFactory.createMatteBorder(2, 2, 2, 2, Color.red);
+
+                    String correo = text_correo.getText();                    
+
+                    //comprobamos que los campos correo y contrasena estan rellenos
+                    if(correo.equals("")){
+                        text_correo.setBorder(border_boton_rojo);
+                        error_log.setVisible(false);
+                        log_admin = false;
+                    }else{
+                        text_correo.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
+                    }
+
+                    String contrasena = null;
+                    if(text_contrasena.getPassword().length<1){
+                        text_contrasena.setBorder(border_boton_rojo);
+                        error_log.setVisible(false);
+                        log_admin = false;
+                    }else{
+                        text_contrasena.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
+                        
+                        //metodo getPassword() nos devuelve un array de char
+                        contrasena = String.valueOf(text_contrasena.getPassword());
+                        System.out.println(contrasena);
+                    }
+
+                    if(log_admin){
+                        correoAdmin=correo;
+                        loggearAdministrador(correo,contrasena);
+                    }
+
+                }else{
+                    JOptionPane.showMessageDialog(VentanaLog.this, "Debe conectarse al servidor", "¡Atención!", 1);
+                }
+                
+                boton_login.setVisible(true);
+                progressBar.setVisible(false);
+                
+                return null;
+            }
+            
+        };   
+        
+        worker.execute(); 
     }//GEN-LAST:event_boton_loginMouseClicked
 
     
     //  METODOS    
+    
+    protected void loggearAdministrador(String correo, String contrasena){
+              
+        envioServidor = "2||"+correo+"||"+contrasena+"||";       
+        
+        try{            
+            enviarServidor.write(envioServidor.getBytes());
+
+            respuestaServidorByte = new byte[1024];
+            input.read(respuestaServidorByte);
+            respuestaServidor = new String(respuestaServidorByte);
+
+            System.out.println(respuestaServidor);           
+            
+            resServidor = respuestaServidor.split("\\|\\|");
+
+            if(resServidor[0].equals("3") && resServidor[1].equals("logAdminOk")){
+
+                app.setCorreo(correoAdmin);
+                app.setNombreAdmin(resServidor[2]);
+                
+                //abrimos el archivo
+                leerArchivo = new FileInputStream("src/aplicacion/Configuracion.properties");
+                //leemos las propiedades
+                properties.load(leerArchivo);
+                //damos valor a las propiedades de nuestro archivo Configuracion
+                properties.setProperty("correo",correo);
+                properties.setProperty("contrasena",contrasena);             
+                //grabamos las modificaciones de las propiedades
+                properties.store(new FileWriter("src/aplicacion/Configuracion.properties"), null);                
+                
+                leerArchivo.close();
+                /*
+                ventanaPrincipal = new VentanaPrincipal(app){
+                    
+                //Con esto cuando llamamos a dispose de la nueva ventana abrimos la principal
+                    @Override
+                    public void dispose(){
+                        //Hacemos visible la principal
+                        getFrame().setVisible(true);
+                        //Cerramos vNueva
+                        super.dispose();
+                    }
+                };
+                            */
+                
+                ventanaPrincipal = new VentanaPrincipal(app);
+                //Hacemos visible la ventana principal
+                ventanaPrincipal.setVisible(true);
+                //Cerramos la principal                
+                dispose();
+
+            }else{              
+                error_log.setVisible(true);
+            }        
+        } catch (IOException ex) {
+            Logger.getLogger(VentanaRegistrarUsuario.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+    //método para conseguir el JFrame de la VentanaLog
+    private JFrame getFrame(){
+        return this;
+    }
 
     protected void cerrarFlujos(){
         try {
