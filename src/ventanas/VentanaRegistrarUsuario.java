@@ -25,16 +25,8 @@ import javax.swing.border.Border;
 public class VentanaRegistrarUsuario extends javax.swing.JDialog {
     protected Aplicacion app;
     
-    Socket socket;
-    OutputStream enviarServidor = null;
-    InputStream input = null;
-    DataInputStream inputStream;
-    DataOutputStream outputStream;
-    
     String respuestaServidor;
     String[] resServidor;
-    String envioServidor;
-    byte[] respuestaServidorByte;
     
     protected int tipoUsuario;
     protected HashMap<String, Integer> departamento_id;
@@ -55,18 +47,6 @@ public class VentanaRegistrarUsuario extends javax.swing.JDialog {
         Dimension tamanoPantalla=mipantalla.getScreenSize();
         setLocation(tamanoPantalla.width/4, tamanoPantalla.height/4);
         //setLocationRelativeTo(null);
-
-        try {
-            socket = app.getSocket();
-            
-            enviarServidor = socket.getOutputStream();
-            input = socket.getInputStream();
-            
-            inputStream = new DataInputStream(socket.getInputStream());
-            outputStream = new DataOutputStream(socket.getOutputStream());
-        } catch (IOException ex) {
-            Logger.getLogger(VentanaLog.class.getName()).log(Level.SEVERE, null, ex);
-        }
         
     }
 
@@ -77,7 +57,6 @@ public class VentanaRegistrarUsuario extends javax.swing.JDialog {
         panel_VentanaRegistro = new javax.swing.JPanel();
         panelUp_ventanaRegistro = new javax.swing.JPanel();
         boton_salir = new javax.swing.JButton();
-        boton_minimizar = new javax.swing.JButton();
         jLabelTitulo = new javax.swing.JLabel();
         jLabelCorreo = new javax.swing.JLabel();
         text_correo = new javax.swing.JTextField();
@@ -140,23 +119,6 @@ public class VentanaRegistrarUsuario extends javax.swing.JDialog {
             }
         });
 
-        boton_minimizar.setBackground(new java.awt.Color(0, 0, 51));
-        boton_minimizar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        boton_minimizar.setForeground(new java.awt.Color(255, 255, 255));
-        boton_minimizar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/icono_minimizar_ventana.png"))); // NOI18N
-        boton_minimizar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        boton_minimizar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                boton_minimizarMouseClicked(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                boton_minimizarMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                boton_minimizarMouseExited(evt);
-            }
-        });
-
         jLabelTitulo.setBackground(new java.awt.Color(240, 239, 240));
         jLabelTitulo.setFont(new java.awt.Font("Dialog", 1, 24)); // NOI18N
         jLabelTitulo.setForeground(new java.awt.Color(240, 239, 240));
@@ -169,9 +131,7 @@ public class VentanaRegistrarUsuario extends javax.swing.JDialog {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelUp_ventanaRegistroLayout.createSequentialGroup()
                 .addGap(28, 28, 28)
                 .addComponent(jLabelTitulo)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 566, Short.MAX_VALUE)
-                .addComponent(boton_minimizar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(10, 10, 10)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 606, Short.MAX_VALUE)
                 .addComponent(boton_salir, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(21, 21, 21))
         );
@@ -181,9 +141,8 @@ public class VentanaRegistrarUsuario extends javax.swing.JDialog {
                 .addGap(16, 16, 16)
                 .addGroup(panelUp_ventanaRegistroLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabelTitulo)
-                    .addComponent(boton_minimizar, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(boton_salir, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         panel_VentanaRegistro.add(panelUp_ventanaRegistro, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 960, 70));
@@ -263,8 +222,8 @@ public class VentanaRegistrarUsuario extends javax.swing.JDialog {
 
         error_registro.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         error_registro.setForeground(new java.awt.Color(153, 0, 51));
-        error_registro.setText("Error en el registro");
-        panel_VentanaRegistro.add(error_registro, new org.netbeans.lib.awtextra.AbsoluteConstraints(414, 450, -1, -1));
+        error_registro.setText("Ya hay un usuario con ese correo");
+        panel_VentanaRegistro.add(error_registro, new org.netbeans.lib.awtextra.AbsoluteConstraints(365, 450, -1, -1));
 
         progressBar.setForeground(new java.awt.Color(26, 64, 95));
         panel_VentanaRegistro.add(progressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(230, 520, 500, 10));
@@ -298,21 +257,6 @@ public class VentanaRegistrarUsuario extends javax.swing.JDialog {
          dispose();
     }//GEN-LAST:event_boton_salirActionPerformed
     
-    //      BOTON MINIMIZAR
-    private void boton_minimizarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_minimizarMouseClicked
-        //this.setState(JFrame.ICONIFIED);
-    }//GEN-LAST:event_boton_minimizarMouseClicked
-
-    private void boton_minimizarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_minimizarMouseEntered
-        Border border_boton = BorderFactory.createMatteBorder(2, 2, 2, 2, Color.white);
-        boton_minimizar.setBorder(border_boton);
-    }//GEN-LAST:event_boton_minimizarMouseEntered
-
-    private void boton_minimizarMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_minimizarMouseExited
-        Border border_boton = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.white);
-        boton_minimizar.setBorder(border_boton);
-    }//GEN-LAST:event_boton_minimizarMouseExited
-
     //      BOTON REGISTRAR
     private void boton_registrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_registrarMouseClicked
 
@@ -446,34 +390,18 @@ public class VentanaRegistrarUsuario extends javax.swing.JDialog {
         return false;
     }
 
-    protected void registrarUsuario(String correo, String contrasena, String nombre, String apellidos, String dni, String tlf, String departamento){
-        envioServidor = "1||"+correo+"||"+contrasena+"||"+nombre+"||"+apellidos+"||"+dni+"||"+tlf+"||"+departamento+"||"+tipoUsuario+"||";
-        
-        try {
-            
-            enviarServidor.write(envioServidor.getBytes());
-
-            respuestaServidorByte = new byte[1024];
-            input.read(respuestaServidorByte);
-            respuestaServidor = new String(respuestaServidorByte);          
-            
-            resServidor = respuestaServidor.split("\\|\\|");
-            
-            if(resServidor[0].equals("1") && resServidor[1].equals("registrarUsuarioOk")){            
-                dispose();
-            }else{
-                error_registro.setVisible(true);
-            }
-            
-            
-        } catch (IOException ex) {
-            Logger.getLogger(VentanaRegistrarUsuario.class.getName()).log(Level.SEVERE, null, ex);
+    protected void registrarUsuario(String correo, String contrasena, String nombre, String apellidos, String dni, String tlf, String departamento){        
+        respuestaServidor = app.protocoloMensajes("1||"+correo+"||"+contrasena+"||"+nombre+"||"+apellidos+"||"+dni+"||"+tlf+"||"+departamento+"||"+tipoUsuario+"||");
+        resServidor = respuestaServidor.split("\\|\\|");
+        if(resServidor[0].equals("1") && resServidor[1].equals("registrarUsuarioOk")){
+            dispose();
+        }else{
+            error_registro.setVisible(true);
         }
         
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton boton_minimizar;
     private javax.swing.JButton boton_registrar;
     private javax.swing.JButton boton_salir;
     private javax.swing.JLabel error_registro;

@@ -7,9 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.util.Arrays;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,20 +23,12 @@ import javax.swing.border.Border;
  */
 public class VentanaLog extends JFrame {
     
-    protected Aplicacion app;
-    protected Boolean conectado_servidor;        
+    protected Aplicacion app;    
     protected Properties properties;
     protected InputStream leerArchivo;
     
-    protected Socket socket;
-    protected OutputStream enviarServidor = null;
-    protected InputStream input = null;
-    
     protected String respuestaServidor;
-    protected String respuestaCliente = null;
-    protected String envioServidor;
-    protected String[] resServidor;
-    protected byte[] respuestaServidorByte;   
+    protected String[] resServidor; 
     
     protected VentanaPrincipal ventanaPrincipal;
     protected String correoAdmin;
@@ -49,8 +38,7 @@ public class VentanaLog extends JFrame {
         initComponents();
         
         app = new Aplicacion();
-        
-        conectado_servidor=false;
+
          //Toolkit mipantalla=Toolkit.getDefaultToolkit();
         //Dimension tamanoPantalla=mipantalla.getScreenSize();
         
@@ -93,19 +81,9 @@ public class VentanaLog extends JFrame {
             //probamos a conectarnos al servidor con la ip y el puerto introducidos en la anterior sesión si existe en nuestro properties
             if((ip_properties!=null && puerto_text_properties!=null) && (!ip_properties.equals("null") && !puerto_text_properties.equals("null"))){
                 int puerto = Integer.parseInt(puerto_text_properties);
-                socket = new Socket(ip_properties,puerto);
-                app.setSocket(socket);
                 
-                enviarServidor = socket.getOutputStream();
-                input = socket.getInputStream();
-                
-                respuestaServidorByte = new byte[1024];
-                input.read(respuestaServidorByte);
-                respuestaServidor = new String(respuestaServidorByte);
+                app.conectarConServidor(ip_properties,puerto);
 
-                System.out.println(respuestaServidor);
-                
-                conectado_servidor=true;
             }            
              
         } catch (FileNotFoundException ex) {
@@ -268,7 +246,7 @@ public class VentanaLog extends JFrame {
 
         error_log_sesion_inciada.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         error_log_sesion_inciada.setForeground(new java.awt.Color(153, 0, 51));
-        error_log_sesion_inciada.setText("Ya ha iniciado sesión con este correo");
+        error_log_sesion_inciada.setText("Ya se ha iniciado sesión con este correo");
         getContentPane().add(error_log_sesion_inciada, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 330, -1, -1));
 
         imagen_fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/fondo_ventanaPrincipal.jpg"))); // NOI18N
@@ -290,9 +268,7 @@ public class VentanaLog extends JFrame {
     
     //      BOTON SALIR Y MINIMIZAR
     private void boton_salirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_salirActionPerformed
-        if(conectado_servidor)
-            cerrarFlujos();
-        
+        app.cerrarFlujos();
         System.exit(0);
     }//GEN-LAST:event_boton_salirActionPerformed
 
@@ -323,7 +299,7 @@ public class VentanaLog extends JFrame {
    
     //      BOTON REGISTRAR
     private void boton_registrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_registrarMouseClicked
-        if(conectado_servidor){
+        if(app.getConectadoServidor()){
             VentanaRegistrarUsuario ventanaRegistrar = new VentanaRegistrarUsuario(this, true, app, 1);
             ventanaRegistrar.setVisible(true);
         }else{
@@ -337,34 +313,11 @@ public class VentanaLog extends JFrame {
     private void boton_servidorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_servidorActionPerformed
         
         //comprobamos si se ha conectado al servidor automaticamente
-        if(conectado_servidor){
+        if(app.getConectadoServidor()){
             JOptionPane.showMessageDialog(this, "Ya está conectado al servidor", "Conexión establecida", 1);
-        }else{             
-            
+        }else{                         
            ConectarServidor con = new ConectarServidor(this, true, app);
            con.setVisible(true);
-           
-           if(app.getSocket()!=null){
-               try {
-                   socket = app.getSocket();
-                   
-                   enviarServidor = socket.getOutputStream();
-                   input = socket.getInputStream();
-                   
-                   respuestaServidorByte = new byte[1024];
-                   input.read(respuestaServidorByte);
-                   respuestaServidor = new String(respuestaServidorByte);
-                   
-                   System.out.println(respuestaServidor);
-                   
-                   conectado_servidor=true;
-                   
-               } catch (IOException ex) {
-                   Logger.getLogger(VentanaLog.class.getName()).log(Level.SEVERE, null, ex);
-               }
-               
-           }
-           
         }
     }//GEN-LAST:event_boton_servidorActionPerformed
 
@@ -401,7 +354,7 @@ public class VentanaLog extends JFrame {
                 error_log.setVisible(false);
                 error_log_sesion_inciada.setVisible(false);             
                 
-                if(conectado_servidor){  
+                if(app.getConectadoServidor()){  
                     
                     boton_login.setVisible(false);
                     progressBar.setVisible(true);
@@ -430,7 +383,6 @@ public class VentanaLog extends JFrame {
                         
                         //metodo getPassword() nos devuelve un array de char
                         contrasena = String.valueOf(text_contrasena.getPassword());
-                        System.out.println(contrasena);
                     }
 
                     if(log_admin){
@@ -456,26 +408,18 @@ public class VentanaLog extends JFrame {
     
     //  METODOS    
     
-    protected void loggearAdministrador(String correo, String contrasena){
-              
-        envioServidor = "2||"+correo+"||"+contrasena+"||";       
+    protected void loggearAdministrador(String correo, String contrasena){    
         
         try{            
-            enviarServidor.write(envioServidor.getBytes());
-
-            respuestaServidorByte = new byte[1024];
-            input.read(respuestaServidorByte);
-            respuestaServidor = new String(respuestaServidorByte);
-
-            System.out.println(respuestaServidor);           
-            
+                   
+            respuestaServidor = app.protocoloMensajes("2||"+correo+"||"+contrasena+"||");
             resServidor = respuestaServidor.split("\\|\\|");
-
+                          
             if(resServidor[0].equals("3") && resServidor[1].equals("logAdminOk")){
 
                 app.setCorreo(correoAdmin);
                 app.setNombreAdmin(resServidor[2]);
-                
+
                 //abrimos el archivo
                 leerArchivo = new FileInputStream("src/aplicacion/Configuracion.properties");
                 //leemos las propiedades
@@ -485,21 +429,8 @@ public class VentanaLog extends JFrame {
                 properties.setProperty("contrasena",contrasena);             
                 //grabamos las modificaciones de las propiedades
                 properties.store(new FileWriter("src/aplicacion/Configuracion.properties"), null);                
-                
+
                 leerArchivo.close();
-                /*
-                ventanaPrincipal = new VentanaPrincipal(app){
-                    
-                //Con esto cuando llamamos a dispose de la nueva ventana abrimos la principal
-                    @Override
-                    public void dispose(){
-                        //Hacemos visible la principal
-                        getFrame().setVisible(true);
-                        //Cerramos vNueva
-                        super.dispose();
-                    }
-                };
-                            */
                 
                 ventanaPrincipal = new VentanaPrincipal(app);
                 //Hacemos visible la ventana principal
@@ -507,34 +438,22 @@ public class VentanaLog extends JFrame {
                 //Cerramos la principal                
                 dispose();
 
-            }else{              
-                error_log.setVisible(true);
-            }        
-        } catch (IOException ex) {
+            }else{
+                
+                if(resServidor[0].equals("5") && resServidor[1].equals("sesionIniciadaOtroDispositivo")){
+                    error_log_sesion_inciada.setVisible(true);
+                    error_log.setVisible(false);
+                }else{
+                    error_log.setVisible(true);
+                    error_log_sesion_inciada.setVisible(false);
+                }
+            }
+            
+            
+        }  catch (IOException ex){
             Logger.getLogger(VentanaRegistrarUsuario.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-    }
-    //método para conseguir el JFrame de la VentanaLog
-    private JFrame getFrame(){
-        return this;
-    }
-
-    protected void cerrarFlujos(){
-        try {
-            
-            if(enviarServidor!=null)
-                enviarServidor.close();
-            
-            if(input!=null)
-                input.close();
-            
-            if(socket!=null)
-                socket.close();
-            
-        } catch (IOException ex) {
-            Logger.getLogger(VentanaLog.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     // MAIN    

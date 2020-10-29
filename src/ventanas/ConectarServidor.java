@@ -23,7 +23,7 @@ public class ConectarServidor extends javax.swing.JDialog {
     protected Aplicacion app;
     protected String ip, puerto_texto;
     protected int puerto;
-    protected Socket socket;
+    //protected Socket socket;
     protected Properties properties;
     protected InputStream leerArchivo;
     
@@ -163,30 +163,30 @@ public class ConectarServidor extends javax.swing.JDialog {
             puerto = Integer.parseInt(puerto_texto);
 
             try {
-                socket = new Socket(ip, puerto);
-                app.setSocket(socket);
+                if(app.conectarConServidor(ip,puerto)){
+                    properties = new Properties();
                 
-                properties = new Properties();
-                
-                //abrimos el archivo
-                leerArchivo = new FileInputStream("src/aplicacion/Configuracion.properties");
-                //leemos las propiedades
-                properties.load(leerArchivo);
-                //damos valor a las propiedades de nuestro archivo Configuracion
-                properties.setProperty("ip", ip);
-                properties.setProperty("puerto", puerto_texto);
-                //grabamos las modificaciones de las propiedades
-                Date fecha = new Date();
-                properties.store(new FileWriter("src/aplicacion/Configuracion.properties"),"Se actualizo la Configuracion   -   "+fecha);
-                
-                leerArchivo.close();
-                
-                dispose();
-                
-            } catch (IOException ex) {
-                error_conectar_label.setVisible(true);
-                System.out.println("No se ha establecido conexión con el servidor. VentanaLog");
-                //Logger.getLogger(ConectarServidor.class.getName()).log(Level.SEVERE, null, ex);
+                    //abrimos el archivo
+                    leerArchivo = new FileInputStream("src/aplicacion/Configuracion.properties");
+                    //leemos las propiedades
+                    properties.load(leerArchivo);
+                    //damos valor a las propiedades de nuestro archivo Configuracion
+                    properties.setProperty("ip", ip);
+                    properties.setProperty("puerto", puerto_texto);
+                    //grabamos las modificaciones de las propiedades
+                    Date fecha = new Date();
+                    properties.store(new FileWriter("src/aplicacion/Configuracion.properties"),"Se actualizo la Configuracion   -   "+fecha);
+
+                    leerArchivo.close();
+
+                    dispose();
+                }else{
+                    error_conectar_label.setVisible(true);
+                    System.out.println("No se ha establecido conexión con el servidor. VentanaLog");
+                }
+
+            } catch (IOException ex) {                
+                Logger.getLogger(ConectarServidor.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
 
