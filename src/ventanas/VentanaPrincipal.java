@@ -9,17 +9,24 @@ import java.awt.Font;
 import static java.awt.Frame.HAND_CURSOR;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Properties;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.SwingWorker;
+import javax.swing.UIManager;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -43,9 +50,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     protected String[] resServidor; 
     
     private static final int INCIDENCIAS_NUEVAS = 0;
-    private static final int INCIDENCIAS_VALIDADAS = 1;
-    private static final int INCIDENCIAS_ARREGLADAS = 2;
-    private static final int HISTORIAL_INCIDENCIAS = 3;
+    private static final int EN_VALIDACION = 1;
+    private static final int INCIDENCIAS_VALIDADAS = 2;
+    private static final int INCIDENCIAS_ARREGLADAS = 3;
+    private static final int HISTORIAL_INCIDENCIAS = 4;
     private int stateIncidencias = INCIDENCIAS_NUEVAS;
     
     public VentanaPrincipal(Aplicacion app) {
@@ -108,14 +116,19 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                         break;
                         
                     case 1:
-                        System.out.println("Incidencia Validada");
+                        System.out.println("Incidencia en Valicadión");
                         break; 
                         
                     case 2:
-                        System.out.println("Incidencia Arreglada");
+                        VentanaIncidenciaValidada ventanaV = new VentanaIncidenciaValidada(VentanaPrincipal.this, true, app, idIncidencia);
+                        ventanaV.setVisible(true);                        
                         break;
                         
                     case 3:
+                        System.out.println("Incidencia Arreglada");
+                        break;
+                        
+                    case 4:
                         System.out.println("Hisotiral Incidencias");
                         break;
                 }
@@ -124,6 +137,77 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
 
         mostrarDatosTabla();  
+        
+        // comboBox para filtrar nuestrar incidencias
+        String[] tipoFiltro = new String[3];
+        tipoFiltro[0] = "";
+        tipoFiltro[1] = "Tipo incidencia";
+        tipoFiltro[2] = "Fecha incidencia";
+        DefaultComboBoxModel modelFiltros = new DefaultComboBoxModel(tipoFiltro);
+        jComboBoxFiltro.setModel(modelFiltros);
+        jComboBoxFiltro.setMaximumRowCount(tipoFiltro.length);
+        jComboBoxFiltro.setEditable(true);   
+        
+        jComboBoxFiltro.addActionListener(new ActionListener() {
+            int item;
+            @Override
+            public void actionPerformed(ActionEvent e){
+                item = jComboBoxFiltro.getSelectedIndex();
+                
+                switch(item){
+                    case 0:
+                        jLabelTipos.setVisible(false);
+                        jComboBoxTipos.setVisible(false);
+                        jLabelFecha1.setVisible(false);
+                        jLabelFecha2.setVisible(false);
+                        text_fecha1.setVisible(false);
+                        text_fecha2.setVisible(false);
+                        break;
+                    case 1:
+                        jLabelTipos.setVisible(true);
+                        jComboBoxTipos.setVisible(true);
+                        jLabelFecha1.setVisible(false);
+                        jLabelFecha2.setVisible(false);
+                        text_fecha1.setVisible(false);
+                        text_fecha2.setVisible(false);
+                        break;
+                    case 2:
+                        jLabelTipos.setVisible(false);
+                        jComboBoxTipos.setVisible(false);
+                        jLabelFecha1.setVisible(true);
+                        jLabelFecha2.setVisible(true);
+                        text_fecha1.setVisible(true);
+                        text_fecha2.setVisible(true);
+                        break;
+                }
+            }
+        });
+        
+        nombreTipos = new String[7];
+        nombreTipos[0] = "Alumbrado";
+        nombreTipos[1] = "Parques y Jardines";
+        nombreTipos[2] = "Fuentes de Agua";
+        nombreTipos[3] = "Alcantarillado";
+        nombreTipos[4] = "Mobiliario Urbano";
+        nombreTipos[5] = "Calzado y Acera";
+        nombreTipos[6] = "Señales y Semáforos";
+        DefaultComboBoxModel modelTipos = new DefaultComboBoxModel(nombreTipos);
+        jComboBoxTipos.setModel(modelTipos);
+        jComboBoxTipos.setMaximumRowCount(tipoFiltro.length);
+        jComboBoxTipos.setEditable(true);   
+        
+        jComboBoxTipos.addActionListener(new ActionListener() {
+            int item;
+            public void actionPerformed(ActionEvent e){
+                item = jComboBoxTipos.getSelectedIndex();
+            }
+        });
+        jLabelTipos.setVisible(false);
+        jComboBoxTipos.setVisible(false);
+        jLabelFecha1.setVisible(false);
+        jLabelFecha2.setVisible(false);
+        text_fecha1.setVisible(false);
+        text_fecha2.setVisible(false);
 
     }
 
@@ -136,11 +220,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         imagen_logo = new javax.swing.JLabel();
         nombre_app = new javax.swing.JLabel();
         nombre_admin = new javax.swing.JLabel();
-        jSeparator2 = new javax.swing.JSeparator();
         jSeparator1 = new javax.swing.JSeparator();
+        jSeparator2 = new javax.swing.JSeparator();
         jSeparator3 = new javax.swing.JSeparator();
+        jSeparator4 = new javax.swing.JSeparator();
         panel_NI = new javax.swing.JPanel();
         label_NR = new javax.swing.JLabel();
+        panel_EV = new javax.swing.JPanel();
+        label_EV = new javax.swing.JLabel();
         panel_V = new javax.swing.JPanel();
         label_V = new javax.swing.JLabel();
         panel_A = new javax.swing.JPanel();
@@ -156,6 +243,15 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         progressBar = new rojerusan.componentes.RSProgressMaterial();
         scrollpane_tabla = new javax.swing.JScrollPane();
         tabla_datos = new javax.swing.JTable();
+        jLabelFiltrar = new javax.swing.JLabel();
+        jComboBoxFiltro = new javax.swing.JComboBox<>();
+        jLabelTipos = new javax.swing.JLabel();
+        jComboBoxTipos = new javax.swing.JComboBox<>();
+        jLabelFecha1 = new javax.swing.JLabel();
+        text_fecha1 = new javax.swing.JTextField();
+        jLabelFecha2 = new javax.swing.JLabel();
+        text_fecha2 = new javax.swing.JTextField();
+        boton_filtrar = new javax.swing.JButton();
         menu = new javax.swing.JMenuBar();
         cerrarsesion_menu = new javax.swing.JMenu();
         cerrarsesion_opciones = new javax.swing.JMenuItem();
@@ -188,14 +284,17 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         nombre_admin.setText("InciApp");
         panel_izquierda.add(nombre_admin, new org.netbeans.lib.awtextra.AbsoluteConstraints(55, 35, -1, -1));
 
-        jSeparator2.setBackground(new java.awt.Color(46, 134, 193));
-        panel_izquierda.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 272, 190, 2));
-
         jSeparator1.setBackground(new java.awt.Color(46, 134, 193));
         panel_izquierda.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 210, 190, 2));
 
+        jSeparator2.setBackground(new java.awt.Color(46, 134, 193));
+        panel_izquierda.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 272, 190, 2));
+
         jSeparator3.setBackground(new java.awt.Color(46, 134, 193));
         panel_izquierda.add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 334, 190, 2));
+
+        jSeparator4.setBackground(new java.awt.Color(46, 134, 193));
+        panel_izquierda.add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 396, 190, 2));
 
         panel_NI.setBackground(new java.awt.Color(26, 64, 95));
         panel_NI.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -236,6 +335,41 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         panel_izquierda.add(panel_NI, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 210, 60));
 
+        panel_EV.setBackground(new java.awt.Color(26, 64, 95));
+        panel_EV.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        panel_EV.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                panel_EVMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                panel_EVMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                panel_EVMouseExited(evt);
+            }
+        });
+
+        label_EV.setFont(new java.awt.Font("Dialog", 1, 20)); // NOI18N
+        label_EV.setForeground(new java.awt.Color(255, 255, 255));
+        label_EV.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        label_EV.setText("En validación");
+
+        javax.swing.GroupLayout panel_EVLayout = new javax.swing.GroupLayout(panel_EV);
+        panel_EV.setLayout(panel_EVLayout);
+        panel_EVLayout.setHorizontalGroup(
+            panel_EVLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(label_EV, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
+        );
+        panel_EVLayout.setVerticalGroup(
+            panel_EVLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panel_EVLayout.createSequentialGroup()
+                .addContainerGap(19, Short.MAX_VALUE)
+                .addComponent(label_EV)
+                .addGap(15, 15, 15))
+        );
+
+        panel_izquierda.add(panel_EV, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 212, 210, 60));
+
         panel_V.setBackground(new java.awt.Color(26, 64, 95));
         panel_V.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         panel_V.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -269,7 +403,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addGap(15, 15, 15))
         );
 
-        panel_izquierda.add(panel_V, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 212, 210, 60));
+        panel_izquierda.add(panel_V, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 274, 210, 60));
 
         panel_A.setBackground(new java.awt.Color(26, 64, 95));
         panel_A.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -304,7 +438,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addGap(16, 16, 16))
         );
 
-        panel_izquierda.add(panel_A, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 274, 210, 60));
+        panel_izquierda.add(panel_A, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 336, 210, 60));
 
         panel_H.setBackground(new java.awt.Color(26, 64, 95));
         panel_H.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -339,7 +473,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addContainerGap(20, Short.MAX_VALUE))
         );
 
-        panel_izquierda.add(panel_H, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 336, 210, 60));
+        panel_izquierda.add(panel_H, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 398, 210, 60));
 
         panel_ventanaPrincipal.add(panel_izquierda, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 210, 810));
 
@@ -425,6 +559,63 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         scrollpane_tabla.setViewportView(tabla_datos);
 
         panel_ventanaPrincipal.add(scrollpane_tabla, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 261, 850, 450));
+
+        jLabelFiltrar.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        jLabelFiltrar.setForeground(new java.awt.Color(47, 47, 40));
+        jLabelFiltrar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelFiltrar.setText("Filtrar:");
+        panel_ventanaPrincipal.add(jLabelFiltrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 190, 70, 25));
+
+        jComboBoxFiltro.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jComboBoxFiltro.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        panel_ventanaPrincipal.add(jComboBoxFiltro, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 190, 210, 25));
+
+        jLabelTipos.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        jLabelTipos.setForeground(new java.awt.Color(47, 47, 40));
+        jLabelTipos.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelTipos.setText("Tipos incidencia:");
+        panel_ventanaPrincipal.add(jLabelTipos, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 190, 150, 25));
+
+        jComboBoxTipos.setFont(new java.awt.Font("Dialog", 0, 12)); // NOI18N
+        jComboBoxTipos.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        panel_ventanaPrincipal.add(jComboBoxTipos, new org.netbeans.lib.awtextra.AbsoluteConstraints(880, 190, 210, 25));
+
+        jLabelFecha1.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        jLabelFecha1.setForeground(new java.awt.Color(47, 47, 40));
+        jLabelFecha1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelFecha1.setText("Desde:");
+        panel_ventanaPrincipal.add(jLabelFecha1, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 190, 80, 25));
+
+        text_fecha1.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        text_fecha1.setForeground(new java.awt.Color(60, 63, 65));
+        text_fecha1.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                text_fecha1KeyTyped(evt);
+            }
+        });
+        panel_ventanaPrincipal.add(text_fecha1, new org.netbeans.lib.awtextra.AbsoluteConstraints(776, 190, 120, 25));
+
+        jLabelFecha2.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        jLabelFecha2.setForeground(new java.awt.Color(47, 47, 40));
+        jLabelFecha2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabelFecha2.setText("Hasta:");
+        panel_ventanaPrincipal.add(jLabelFecha2, new org.netbeans.lib.awtextra.AbsoluteConstraints(930, 190, 80, 25));
+
+        text_fecha2.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
+        text_fecha2.setForeground(new java.awt.Color(60, 63, 65));
+        panel_ventanaPrincipal.add(text_fecha2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1000, 190, 120, 25));
+
+        boton_filtrar.setBackground(new java.awt.Color(26, 64, 95));
+        boton_filtrar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
+        boton_filtrar.setForeground(new java.awt.Color(240, 239, 240));
+        boton_filtrar.setText("Filtrar");
+        boton_filtrar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        boton_filtrar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                boton_filtrarActionPerformed(evt);
+            }
+        });
+        panel_ventanaPrincipal.add(boton_filtrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(1180, 180, -1, 40));
 
         menu.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         menu.setPreferredSize(new java.awt.Dimension(1380, 30));
@@ -581,6 +772,140 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         mostrarDatosTabla();
     }//GEN-LAST:event_boton_refrescarMouseClicked
 
+    //      BOTON FILTRAR TABLA INCIDENCIAS
+    private void boton_filtrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_filtrarActionPerformed
+        int item, nTipo;
+        item = jComboBoxFiltro.getSelectedIndex();
+        boolean filtrar = true;
+        String tipoIncidencia,fecha1,fecha2;
+
+        ArrayList<RowTablaIncidencia> incidenciasFiltradas;
+        Border border_boton_rojo = BorderFactory.createMatteBorder(2, 2, 2, 2, Color.red);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+        switch(item){
+            case 0:
+                JOptionPane.showMessageDialog(this, "Debe seleccionar un filtro", "¡Filtro!", 1);
+                break;
+                
+            case 1:
+                nTipo = jComboBoxTipos.getSelectedIndex();
+                tipoIncidencia = nombreTipos[nTipo];
+                incidenciasFiltradas = new ArrayList<>();
+                for(RowTablaIncidencia inci : arrayIncidencias){
+                    if(inci.getTipo().equals(tipoIncidencia)){
+                        incidenciasFiltradas.add(inci);
+                    }
+                }
+                cargarTabla(incidenciasFiltradas);
+                break;
+            
+            case 2:
+                int anno, mes, dia;
+                LocalDate localDate1,localDate2;
+                Date dateBefore, dateAfter;
+                ZoneId defaultZoneId;
+
+                fecha1 = text_fecha1.getText();
+                fecha2 = text_fecha2.getText();
+
+                if(fecha1.isEmpty()){
+                    text_fecha1.setBorder(border_boton_rojo);
+                    filtrar = false;
+                }else{
+                    text_fecha1.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
+                }
+                if(fecha2.isEmpty()){
+                    text_fecha2.setBorder(border_boton_rojo);
+                    filtrar = false;
+                }else{
+                    text_fecha2.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
+                }
+                //si hay algun textField en blanco, dejamos de seguir comprobando las fechas
+                if(!filtrar)
+                return;
+
+                //comprobamos que la fecha está en el formato correcto
+                //convirtiendo la cadena en un objeto de fecha y luego volviendola a convertir en cadena
+                //la cadena de fecha estará bien si ambas cadenas coinciden
+                try{
+                    if (( sdf.format(sdf.parse(fecha1)).equals(fecha1))
+                        && (sdf.format(sdf.parse(fecha2)).equals(fecha2))){}
+
+                } catch (java.text.ParseException ex) {
+                    JOptionPane.showMessageDialog(this, "Fecha debe tener formato yyyy-MM-dd", "Formato fecha", 1);
+                    return;
+                }
+
+                try{
+                    //separamos en año, mes y dia la fecha introducida por el usuario
+                    anno = Integer.parseInt(fecha1.substring(0, fecha1.indexOf("-")));
+                    fecha1 = fecha1.substring(fecha1.indexOf("-")+1);
+                    mes = Integer.parseInt(fecha1.substring(0, fecha1.indexOf("-")));
+                    dia = Integer.parseInt(fecha1.substring(fecha1.indexOf("-")+1));
+                    //creamos un objecto LocalDate a partir de la fecha proporcionada
+                    //si la fecha es erronea nos saltará a la excepción y no validaremos dicha fecha
+                    localDate1 = LocalDate.of(anno,mes,dia);
+
+                    anno = Integer.parseInt(fecha2.substring(0, fecha2.indexOf("-")));
+                    fecha2 = fecha2.substring(fecha2.indexOf("-")+1);
+                    mes = Integer.parseInt(fecha2.substring(0, fecha2.indexOf("-")));
+                    dia = Integer.parseInt(fecha2.substring(fecha2.indexOf("-")+1));
+
+                    localDate2 = LocalDate.of(anno,mes,dia);
+
+                    //por último comprobaremos que la primera fecha proporcionada es inferior o igual a la segunda
+                    if(localDate1.isBefore(localDate2) || localDate1.equals(localDate2)){
+                        //pasamos nuestros objetos LocalDate a Date para realizar la comparación de filtrado
+                        defaultZoneId = ZoneId.systemDefault();
+                        dateBefore = Date.from(localDate1.atStartOfDay(defaultZoneId).toInstant());
+                        dateAfter = Date.from(localDate2.atStartOfDay(defaultZoneId).toInstant());
+
+                        incidenciasFiltradas = new ArrayList<>();
+                        for(RowTablaIncidencia inci : arrayIncidencias){
+
+                            if((inci.getFecha().after(dateBefore) || inci.getFecha().equals(dateBefore))
+                                && (inci.getFecha().before(dateAfter) || inci.getFecha().equals(dateAfter))){
+
+                                incidenciasFiltradas.add(inci);
+                            }
+                        }
+
+                        cargarTabla(incidenciasFiltradas);
+
+                    }else{
+                        JOptionPane.showMessageDialog(this, "La segunda fecha debe ser posterior a la primera", "Fecha incorrecta", 1);
+                    }
+
+                }catch (java.time.DateTimeException dte){
+                    JOptionPane.showMessageDialog(this, "Introduzca fecha valida", "Fecha incorrecta", 1);
+                }
+                break;
+        }
+    }//GEN-LAST:event_boton_filtrarActionPerformed
+
+    //      LIMITE CARACTERES FECHA
+    private void text_fecha1KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_text_fecha1KeyTyped
+        if(text_fecha1.getText().length() == 10)
+           evt.consume();
+    }//GEN-LAST:event_text_fecha1KeyTyped
+
+    
+    //      PANEL EN VALIDACION
+    private void panel_EVMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panel_EVMouseClicked
+        stateIncidencias = EN_VALIDACION;
+        titulo.setText("EN VALIDACIÓN");
+        mostrarDatosTabla();
+    }//GEN-LAST:event_panel_EVMouseClicked
+
+    private void panel_EVMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panel_EVMouseEntered
+        panel_EV.setBackground(new java.awt.Color(46,134,193));
+    }//GEN-LAST:event_panel_EVMouseEntered
+
+    private void panel_EVMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panel_EVMouseExited
+         panel_EV.setBackground(new java.awt.Color(26,64,95));
+    }//GEN-LAST:event_panel_EVMouseExited
+
 
     //      METODOS
     
@@ -654,16 +979,25 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton boton_filtrar;
     private javax.swing.JButton boton_minimizar;
     private javax.swing.JButton boton_refrescar;
     private javax.swing.JButton boton_salir;
     private javax.swing.JMenu cerrarsesion_menu;
     private javax.swing.JMenuItem cerrarsesion_opciones;
     private javax.swing.JLabel imagen_logo;
+    private javax.swing.JComboBox<String> jComboBoxFiltro;
+    private javax.swing.JComboBox<String> jComboBoxTipos;
+    private javax.swing.JLabel jLabelFecha1;
+    private javax.swing.JLabel jLabelFecha2;
+    private javax.swing.JLabel jLabelFiltrar;
+    private javax.swing.JLabel jLabelTipos;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JLabel label_A;
+    private javax.swing.JLabel label_EV;
     private javax.swing.JLabel label_H;
     private javax.swing.JLabel label_NR;
     private javax.swing.JLabel label_V;
@@ -671,6 +1005,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel nombre_admin;
     private javax.swing.JLabel nombre_app;
     private javax.swing.JPanel panel_A;
+    private javax.swing.JPanel panel_EV;
     private javax.swing.JPanel panel_H;
     private javax.swing.JPanel panel_NI;
     private javax.swing.JPanel panel_V;
@@ -681,6 +1016,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JSeparator separador_titulo_down;
     private javax.swing.JSeparator separador_titulo_up;
     private javax.swing.JTable tabla_datos;
+    private javax.swing.JTextField text_fecha1;
+    private javax.swing.JTextField text_fecha2;
     private javax.swing.JLabel titulo;
     // End of variables declaration//GEN-END:variables
 }

@@ -43,6 +43,8 @@ public class Aplicacion {
     private static final int INCIDENCIAS_TABLA = 4;
     private static final int DATOS_INCIDENCIA_NUEVA_REGISTRADA = 5;
     private static final int ASIGNAR_INCIDENCIA_SUPERVISOR = 6;
+    private static final int LISTADO_EMPLEADOS = 7;
+    private static final int ASIGNAR_INCIDENCIA_EMPLEADO = 8;
     
     
     private String correo;
@@ -171,6 +173,16 @@ public class Aplicacion {
                                 state = ASIGNAR_INCIDENCIA_SUPERVISOR;
                                 transicionNula=true;
                                 break;
+                                
+                            case "7":
+                                state = LISTADO_EMPLEADOS;
+                                transicionNula=true;
+                                break;
+                                
+                            case "8":
+                                state = ASIGNAR_INCIDENCIA_EMPLEADO;
+                                transicionNula=true;
+                                break;
                         }                    
                         break;
 
@@ -266,6 +278,29 @@ public class Aplicacion {
                         
                         while((leerServidor.read(respuestaServidorByte = new byte[leerServidor.available()]))<1){}   
                         respuestaUsuario = new String(respuestaServidorByte);
+                        
+                        state = INICIO; 
+                        transicionNula=false;
+                        break;
+                        
+                    case LISTADO_EMPLEADOS:
+                        
+                        enviarServidor.write(mensaje.getBytes());
+                        enviarServidor.flush();   
+                        
+                        respuestaUsuario = dataInputStream.readUTF();
+
+                        state = INICIO;
+                        transicionNula=false;
+                        break;
+                        
+                    case ASIGNAR_INCIDENCIA_EMPLEADO:
+                        
+                        enviarServidor.write(mensaje.getBytes());
+                        enviarServidor.flush();
+                        
+                        while((leerServidor.read(respuestaServidorByte = new byte[leerServidor.available()]))<1){}   
+                        respuestaUsuario = new String(respuestaServidorByte);                        
                         
                         state = INICIO; 
                         transicionNula=false;

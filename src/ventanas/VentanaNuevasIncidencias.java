@@ -30,15 +30,8 @@ public class VentanaNuevasIncidencias extends javax.swing.JDialog {
     protected Aplicacion app;
     protected int idIncidencia;
     
-    Socket socket;
-    InputStream leerServidor;
-    OutputStream enviarServidor;
-    DataInputStream inputStream;
-    DataOutputStream outputStream;
-    
     String respuestaServidor;
-    String[] resServidor;
-    String envioServidor;
+    String[] resServidor;    
     byte[] respuestaServidorByte;
     
     String[] correos, nombres;
@@ -50,21 +43,9 @@ public class VentanaNuevasIncidencias extends javax.swing.JDialog {
         this.app=app;
         this.idIncidencia=idIncidencia;
         
-        //setSize(960, 540);
         setSize(1440, 810);
         setLocationRelativeTo(null);
-        
-        try {
-            socket = app.getSocket();
-            
-            enviarServidor = socket.getOutputStream();
-            leerServidor = socket.getInputStream();
-
-            inputStream = new DataInputStream(socket.getInputStream());
-            outputStream = new DataOutputStream(socket.getOutputStream());
-        } catch (IOException e) {
-        }
-                        
+                                
         datosIncidencia();      
                
     }

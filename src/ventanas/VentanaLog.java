@@ -22,77 +22,75 @@ import javax.swing.border.Border;
  * @author mivap
  */
 public class VentanaLog extends JFrame {
-    
-    protected Aplicacion app;    
+
+    protected Aplicacion app;
     protected Properties properties;
     protected InputStream leerArchivo;
-    
+
     protected String respuestaServidor;
-    protected String[] resServidor; 
-    
+    protected String[] resServidor;
+
     protected VentanaPrincipal ventanaPrincipal;
     protected String correoAdmin;
-    
-    
+
     public VentanaLog() {
         initComponents();
-        
+
         app = new Aplicacion();
 
-         //Toolkit mipantalla=Toolkit.getDefaultToolkit();
+        //Toolkit mipantalla=Toolkit.getDefaultToolkit();
         //Dimension tamanoPantalla=mipantalla.getScreenSize();
-        
         Border border_boton = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.white);
         boton_minimizar.setBorder(border_boton);
         boton_salir.setBorder(border_boton);
         error_log.setVisible(false);
         error_log_sesion_inciada.setVisible(false);
-        progressBar.setVisible(false);       
+        progressBar.setVisible(false);
 
-        setSize(360,450);
+        setSize(360, 450);
         this.setLocationRelativeTo(null);
-            
+
         properties = new Properties();
-        
+
         try {
-            
+
             //abrimos el archivo
             leerArchivo = new FileInputStream("src/aplicacion/Configuracion.properties");
             //leemos las propiedades
-            properties.load(leerArchivo);             
-            
+            properties.load(leerArchivo);
+
             //obtenemos las propiedades que queremos (IP y PUERTO)
             String correo_properties = properties.getProperty("correo");
             String contrasena_properties = properties.getProperty("contrasena");
             String ip_properties = properties.getProperty("ip");
             String puerto_text_properties = properties.getProperty("puerto");
-            
-            leerArchivo.close();     
-            
+
+            leerArchivo.close();
+
             //si teniamos introducida anteriormente correo y contraseña
             //lo recuperaremos del archivo properties e insertaremos en sus campos de la ventana de log
-            if((correo_properties!=null &&!correo_properties.equals("null")) && (contrasena_properties!=null && !contrasena_properties.equals("null"))){
+            if ((correo_properties != null && !correo_properties.equals("null")) && (contrasena_properties != null && !contrasena_properties.equals("null"))) {
                 text_correo.setText(correo_properties);
                 text_contrasena.setText(contrasena_properties);
                 //guardaremos en nuestra clase Aplicacion el correo con el que se inicia sesion
-                correoAdmin=correo_properties;
+                correoAdmin = correo_properties;
             }
-            
-            //probamos a conectarnos al servidor con la ip y el puerto introducidos en la anterior sesión si existe en nuestro properties
-            if((ip_properties!=null && puerto_text_properties!=null) && (!ip_properties.equals("null") && !puerto_text_properties.equals("null"))){
-                int puerto = Integer.parseInt(puerto_text_properties);
-                
-                app.conectarConServidor(ip_properties,puerto);
 
-            }            
-             
+            //probamos a conectarnos al servidor con la ip y el puerto introducidos en la anterior sesión si existe en nuestro properties
+            if ((ip_properties != null && puerto_text_properties != null) && (!ip_properties.equals("null") && !puerto_text_properties.equals("null"))) {
+                int puerto = Integer.parseInt(puerto_text_properties);
+
+                app.conectarConServidor(ip_properties, puerto);
+
+            }
+
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(VentanaLog.class.getName()).log(Level.SEVERE, null, ex);           
+            Logger.getLogger(VentanaLog.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             //Logger.getLogger(VentanaLog.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("No se ha establecido conexión con el servidor. VentanaLog");
-        } 
-        
+        }
+
         this.setVisible(true);
     }
 
@@ -265,7 +263,7 @@ public class VentanaLog extends JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+
     //      BOTON SALIR Y MINIMIZAR
     private void boton_salirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_salirActionPerformed
         app.cerrarFlujos();
@@ -296,28 +294,27 @@ public class VentanaLog extends JFrame {
         this.setState(JFrame.ICONIFIED);
     }//GEN-LAST:event_boton_minimizarMouseClicked
 
-   
     //      BOTON REGISTRAR
     private void boton_registrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_registrarMouseClicked
-        if(app.getConectadoServidor()){
+        if (app.getConectadoServidor()) {
             VentanaRegistrarUsuario ventanaRegistrar = new VentanaRegistrarUsuario(this, true, app, 1);
             ventanaRegistrar.setVisible(true);
-        }else{
+        } else {
             JOptionPane.showMessageDialog(this, "Debe conectarse al servidor", "¡Atención!", 1);
         }
-        
+
         boton_registrar.setEnabled(true);
     }//GEN-LAST:event_boton_registrarMouseClicked
 
     //      BOTON CONECTAR SERVIDOR
     private void boton_servidorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_servidorActionPerformed
-        
+
         //comprobamos si se ha conectado al servidor automaticamente
-        if(app.getConectadoServidor()){
+        if (app.getConectadoServidor()) {
             JOptionPane.showMessageDialog(this, "Ya está conectado al servidor", "Conexión establecida", 1);
-        }else{                         
-           ConectarServidor con = new ConectarServidor(this, true, app);
-           con.setVisible(true);
+        } else {
+            ConectarServidor con = new ConectarServidor(this, true, app);
+            con.setVisible(true);
         }
     }//GEN-LAST:event_boton_servidorActionPerformed
 
@@ -334,88 +331,86 @@ public class VentanaLog extends JFrame {
     //  MOVER VENTANA
     int xx, xy;
     private void imagen_fondoMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagen_fondoMousePressed
-        xx=evt.getX();
-        xy=evt.getY();        
+        xx = evt.getX();
+        xy = evt.getY();
     }//GEN-LAST:event_imagen_fondoMousePressed
 
     private void imagen_fondoMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagen_fondoMouseDragged
         int x = evt.getXOnScreen();
         int y = evt.getYOnScreen();
-        
-        this.setLocation(x-xx, y-xy);
+
+        this.setLocation(x - xx, y - xy);
     }//GEN-LAST:event_imagen_fondoMouseDragged
 
     //      BOTON LOGIN
     private void boton_loginMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_loginMouseClicked
- 
-        SwingWorker worker = new SwingWorker<Void, Void>(){
+
+        SwingWorker worker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
                 error_log.setVisible(false);
-                error_log_sesion_inciada.setVisible(false);             
-                
-                if(app.getConectadoServidor()){  
-                    
+                error_log_sesion_inciada.setVisible(false);
+
+                if (app.getConectadoServidor()) {
+
                     boton_login.setVisible(false);
                     progressBar.setVisible(true);
 
                     boolean log_admin = true;
                     Border border_boton_rojo = BorderFactory.createMatteBorder(2, 2, 2, 2, Color.red);
 
-                    String correo = text_correo.getText();                    
+                    String correo = text_correo.getText();
 
                     //comprobamos que los campos correo y contrasena estan rellenos
-                    if(correo.equals("")){
+                    if (correo.equals("")) {
                         text_correo.setBorder(border_boton_rojo);
                         error_log.setVisible(false);
                         log_admin = false;
-                    }else{
+                    } else {
                         text_correo.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
                     }
 
                     String contrasena = null;
-                    if(text_contrasena.getPassword().length<1){
+                    if (text_contrasena.getPassword().length < 1) {
                         text_contrasena.setBorder(border_boton_rojo);
                         error_log.setVisible(false);
                         log_admin = false;
-                    }else{
+                    } else {
                         text_contrasena.setBorder(UIManager.getLookAndFeel().getDefaults().getBorder("TextField.border"));
-                        
+
                         //metodo getPassword() nos devuelve un array de char
                         contrasena = String.valueOf(text_contrasena.getPassword());
                     }
 
-                    if(log_admin){
-                        correoAdmin=correo;
-                        loggearAdministrador(correo,contrasena);
+                    if (log_admin) {
+                        correoAdmin = correo;
+                        loggearAdministrador(correo, contrasena);
                     }
 
-                }else{
+                } else {
                     JOptionPane.showMessageDialog(VentanaLog.this, "Debe conectarse al servidor", "¡Atención!", 1);
                 }
-                
+
                 boton_login.setVisible(true);
                 progressBar.setVisible(false);
-                
+
                 return null;
             }
-            
-        };   
-        
-        worker.execute(); 
+
+        };
+
+        worker.execute();
     }//GEN-LAST:event_boton_loginMouseClicked
 
-    
     //  METODOS    
-    
-    protected void loggearAdministrador(String correo, String contrasena){    
-        
-        try{            
-                   
-            respuestaServidor = app.protocoloMensajes("2||"+correo+"||"+contrasena+"||");
+    protected void loggearAdministrador(String correo, String contrasena) {
+
+        try {
+
+            respuestaServidor = app.protocoloMensajes("2||" + correo + "||" + contrasena + "||");
             resServidor = respuestaServidor.split("\\|\\|");
-                          
-            if(resServidor[0].equals("3") && resServidor[1].equals("logAdminOk")){
+
+            if (resServidor[0].equals("3") && resServidor[1].equals("logAdminOk")) {
 
                 app.setCorreo(correoAdmin);
                 app.setNombreAdmin(resServidor[2]);
@@ -425,32 +420,31 @@ public class VentanaLog extends JFrame {
                 //leemos las propiedades
                 properties.load(leerArchivo);
                 //damos valor a las propiedades de nuestro archivo Configuracion
-                properties.setProperty("correo",correo);
-                properties.setProperty("contrasena",contrasena);             
+                properties.setProperty("correo", correo);
+                properties.setProperty("contrasena", contrasena);
                 //grabamos las modificaciones de las propiedades
-                properties.store(new FileWriter("src/aplicacion/Configuracion.properties"), null);                
+                properties.store(new FileWriter("src/aplicacion/Configuracion.properties"), null);
 
                 leerArchivo.close();
-                
+
                 ventanaPrincipal = new VentanaPrincipal(app);
                 //Hacemos visible la ventana principal
                 ventanaPrincipal.setVisible(true);
                 //Cerramos la principal                
                 dispose();
 
-            }else{
-                
-                if(resServidor[0].equals("5") && resServidor[1].equals("sesionIniciadaOtroDispositivo")){
+            } else {
+
+                if (resServidor[0].equals("5") && resServidor[1].equals("sesionIniciadaOtroDispositivo")) {
                     error_log_sesion_inciada.setVisible(true);
                     error_log.setVisible(false);
-                }else{
+                } else {
                     error_log.setVisible(true);
                     error_log_sesion_inciada.setVisible(false);
                 }
             }
-            
-            
-        }  catch (IOException ex){
+
+        } catch (IOException ex) {
             Logger.getLogger(VentanaRegistrarUsuario.class.getName()).log(Level.SEVERE, null, ex);
         }
 
@@ -459,8 +453,8 @@ public class VentanaLog extends JFrame {
     // MAIN    
     public static void main(String args[]) throws IOException {
         java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {                
-                VentanaLog ventanaLog = new VentanaLog();                
+            public void run() {
+                VentanaLog ventanaLog = new VentanaLog();
             }
         });
     }
