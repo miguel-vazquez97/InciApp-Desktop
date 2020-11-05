@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import sun.misc.BASE64Decoder;
 import ventanas.VentanaLog;
 
 /**
@@ -31,8 +32,12 @@ public class Aplicacion {
     private OutputStream enviarServidor;
     protected  DataInputStream dataInputStream;
     
+    protected  String [] mensajeUsuario;
+    protected String respuestaUsuario;    
+    
     protected String respuestaServidor;
     protected byte[] respuestaServidorByte;   
+    protected String[] resServidor;
     
     static boolean transicionNula = false;
     private int state = INICIO;
@@ -45,7 +50,9 @@ public class Aplicacion {
     private static final int ASIGNAR_INCIDENCIA_SUPERVISOR = 6;
     private static final int LISTADO_EMPLEADOS = 7;
     private static final int ASIGNAR_INCIDENCIA_EMPLEADO = 8;
+    private static final int DETALLES_HISTORIAL_INCIDENCIA = 11;
     
+    BASE64Decoder decoder;
     
     private String correo;
     private String nombreAdmin;
@@ -54,7 +61,7 @@ public class Aplicacion {
     private ArrayList<RowTablaIncidencia> arrayIncidencias;
 
     public Aplicacion() {
-        conectadoServidor=false;
+        conectadoServidor=false;         
     }
 
     public Socket getSocket() {
@@ -133,10 +140,24 @@ public class Aplicacion {
     
     
     public String protocoloMensajes(String mensaje){
-        String [] mensajeUsuario = mensaje.split("\\|\\|");
-        String respuestaUsuario = "";
+       mensajeUsuario = mensaje.split("\\|\\|");
+       respuestaUsuario = "";        
         
         try{
+            
+            //comprobamos si hemos recibido algun mensaje por parte del servidor
+            if(leerServidor.available()>0){
+                leerServidor.read(respuestaServidorByte = new byte[leerServidor.available()]);
+                respuestaUsuario = new String(respuestaServidorByte);
+                resServidor = respuestaUsuario.split("\\|\\|");
+                //si recibimos esta respuesta significará que la sesion en la que nos encontrabamos ha expirado
+                if(resServidor[0].equals("0") && resServidor[1].equals("sesionCaducada")){                   
+                    return respuestaUsuario;
+                }
+                respuestaUsuario = "";
+            }
+            
+            
             do{            
                 switch(state){
 
@@ -181,6 +202,11 @@ public class Aplicacion {
                                 
                             case "8":
                                 state = ASIGNAR_INCIDENCIA_EMPLEADO;
+                                transicionNula=true;
+                                break;
+                                
+                            case "11":
+                                state = DETALLES_HISTORIAL_INCIDENCIA;
                                 transicionNula=true;
                                 break;
                         }                    
@@ -303,6 +329,38 @@ public class Aplicacion {
                         respuestaUsuario = new String(respuestaServidorByte);                        
                         
                         state = INICIO; 
+                        transicionNula=false;
+                        break;
+                        
+                    case DETALLES_HISTORIAL_INCIDENCIA:
+                        
+                        enviarServidor.write(mensaje.getBytes());
+                        enviarServidor.flush();
+                        
+                        //tamano que tendra nuestra cadena en base64
+                        size = dataInputStream.readInt();
+
+                        while(dataInputStream.available()<1){}
+
+                        byte[] arrayBytesBase64;
+                        String base64="", cadena;
+                        while(base64.length()<size){
+                            arrayBytesBase64 = new byte[dataInputStream.available()];
+                            //recibimos bytes
+                            dataInputStream.read(arrayBytesBase64);
+                            //parseamos a cadena
+                            cadena = new String(arrayBytesBase64);
+                            //unimos a la cadena que formara nuestro Base64
+                            base64 += cadena;
+                        }
+
+                        //descodificamos a bytes
+                        decoder = new BASE64Decoder();
+                        byte[] arrayBytes = decoder.decodeBuffer(base64);
+                        //creamos lo que será nuestro JSONArray en cadena
+                        respuestaUsuario = new String(arrayBytes);
+                        
+                        state = INICIO;
                         transicionNula=false;
                         break;
                             

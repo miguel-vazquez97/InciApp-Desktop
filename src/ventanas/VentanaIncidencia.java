@@ -3,13 +3,6 @@ package ventanas;
 import aplicacion.Aplicacion;
 import aplicacion.Incidencia;
 import java.awt.Color;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.util.Date;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.ImageIcon;
@@ -25,23 +18,25 @@ import sun.misc.BASE64Decoder;
  *
  * @author mivap
  */
-public class VentanaNuevasIncidencias extends javax.swing.JDialog {
+public class VentanaIncidencia extends javax.swing.JDialog {
 
     protected Aplicacion app;
     protected int idIncidencia;
+    protected String estado;
     
     String respuestaServidor;
     String[] resServidor;    
     byte[] respuestaServidorByte;
     
-    String[] correos, nombres;
+    String[] nombreS, correoS, nombreE, correoE;
 
-    public VentanaNuevasIncidencias(java.awt.Frame parent, boolean modal, Aplicacion app, int idIncidencia) {
+    public VentanaIncidencia(java.awt.Frame parent, boolean modal, Aplicacion app, int idIncidencia, String estado) {
         super(parent, modal);     
         initComponents();
         
         this.app=app;
         this.idIncidencia=idIncidencia;
+        this.estado = estado;
         
         setSize(1440, 810);
         setLocationRelativeTo(null);
@@ -76,10 +71,13 @@ public class VentanaNuevasIncidencias extends javax.swing.JDialog {
         jLabelDepartamento = new javax.swing.JLabel();
         text_departamento = new javax.swing.JTextField();
         jLabelSupervisor = new javax.swing.JLabel();
+        jComboBoxSupervisores = new javax.swing.JComboBox<>();
+        text_nombre_supervisor = new javax.swing.JTextField();
+        jLabelEmpleado = new javax.swing.JLabel();
+        jComboBoxEmpleados = new javax.swing.JComboBox<>();
         jLabelImagen = new javax.swing.JLabel();
         progressBar = new javax.swing.JProgressBar();
         boton_aceptar = new javax.swing.JButton();
-        jComboBoxSupervisores = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setUndecorated(true);
@@ -250,6 +248,23 @@ public class VentanaNuevasIncidencias extends javax.swing.JDialog {
         jLabelSupervisor.setText("Supervisor:");
         panel_principal.add(jLabelSupervisor, new org.netbeans.lib.awtextra.AbsoluteConstraints(168, 610, -1, -1));
 
+        jComboBoxSupervisores.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
+        panel_principal.add(jComboBoxSupervisores, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 610, 310, 30));
+
+        text_nombre_supervisor.setEditable(false);
+        text_nombre_supervisor.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
+        text_nombre_supervisor.setForeground(new java.awt.Color(60, 63, 65));
+        text_nombre_supervisor.setBorder(null);
+        panel_principal.add(text_nombre_supervisor, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 610, 310, 25));
+
+        jLabelEmpleado.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        jLabelEmpleado.setForeground(new java.awt.Color(47, 47, 40));
+        jLabelEmpleado.setText("Empleado:");
+        panel_principal.add(jLabelEmpleado, new org.netbeans.lib.awtextra.AbsoluteConstraints(168, 680, -1, -1));
+
+        jComboBoxEmpleados.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
+        panel_principal.add(jComboBoxEmpleados, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 680, 310, 30));
+
         jLabelImagen.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelImagen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/logo_inciapp.png"))); // NOI18N
         panel_principal.add(jLabelImagen, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 300, -1, -1));
@@ -268,9 +283,6 @@ public class VentanaNuevasIncidencias extends javax.swing.JDialog {
             }
         });
         panel_principal.add(boton_aceptar, new org.netbeans.lib.awtextra.AbsoluteConstraints(1310, 730, -1, 40));
-
-        jComboBoxSupervisores.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
-        panel_principal.add(jComboBoxSupervisores, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 610, 310, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -317,31 +329,56 @@ public class VentanaNuevasIncidencias extends javax.swing.JDialog {
     //     BOTON ACEPTAR 
     private void boton_aceptarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_aceptarMouseClicked
 
-        SwingWorker workerAceptarIncidencia = new SwingWorker<Void, Void>(){
-            @Override
-            protected Void doInBackground() throws Exception {
-                progressBar.setVisible(true);
-                progressBar.setIndeterminate(true);
+        //nos seguramos que tenemos seleccionado un supervisor de nuestro combobox
+        if((jComboBoxSupervisores.getSelectedIndex() != -1 && estado.equals("NuevaRegistrada")) || (jComboBoxEmpleados.getSelectedIndex() != -1 && estado.equals("Validada"))){
+        
+            SwingWorker workerAceptarIncidencia = new SwingWorker<Void, Void>(){
+                @Override
+                protected Void doInBackground() throws Exception {
+                    progressBar.setVisible(true);
+                    progressBar.setIndeterminate(true);
+                    
+                    switch(estado){
+                        case "NuevaRegistrada":
+                            respuestaServidor = app.protocoloMensajes("6||"+idIncidencia+"||"+app.getCorreo()+"||"+correoS[jComboBoxSupervisores.getSelectedIndex()]+"||");
+                            resServidor = respuestaServidor.split("\\|\\|");
+                            resServidor = respuestaServidor.split("\\|\\|");
                 
-                respuestaServidor = app.protocoloMensajes("6||"+idIncidencia+"||"+app.getCorreo()+"||"+correos[jComboBoxSupervisores.getSelectedIndex()]+"||");
-                resServidor = respuestaServidor.split("\\|\\|");
+                            if(resServidor[0].equals("0") && resServidor[1].equals("sesionCaducada")){
+                                JOptionPane.showMessageDialog(VentanaIncidencia.this, "Su sesión ha caducado", "Message", 0);
+                                dispose();
+                                VentanaLog ventanaLog = new VentanaLog();
+                            }else if(!resServidor[0].equals("9") && !resServidor[1].equals("supervisorAsignadoOk")){
+                                JOptionPane.showMessageDialog(VentanaIncidencia.this, "Supervisor no asiganado. Recarge la tabla e intentelo de nuevo", "Message", 2);
+                            }
+                            
+                            break;
+                            
+                        case "Validada":
+                            respuestaServidor = app.protocoloMensajes("8||"+idIncidencia+"||"+correoE[jComboBoxEmpleados.getSelectedIndex()]+"||");
+                            resServidor = respuestaServidor.split("\\|\\|");
 
-                if(resServidor[0].equals("9") && resServidor[1].equals("supervisorAsignadoOk")){
+                            if(resServidor[0].equals("0") && resServidor[1].equals("sesionCaducada")){
+                                JOptionPane.showMessageDialog(VentanaIncidencia.this, "Su sesión ha caducado", "Message", 0);
+                                dispose();
+                                VentanaLog ventanaLog = new VentanaLog();
+                            }else if(!resServidor[0].equals("11") && !resServidor[1].equals("empleadoAsignadoOk")){
+                                JOptionPane.showMessageDialog(VentanaIncidencia.this, "Empleado no asiganado. Recarge la tabla e intentelo de nuevo", "Message", 2);
+                            }
+                            
+                            break;
+                    }
+                    
+                    progressBar.setIndeterminate(false);
+                    progressBar.setVisible(false);
                     dispose();
-                }else{
-                    JOptionPane.showMessageDialog(VentanaNuevasIncidencias.this, "Recarge la tabla e intentelo de nuevo", "Supervisor no asignado", 2);
-                    dispose();
+                    return null;
                 }
 
-                progressBar.setIndeterminate(false);
-                progressBar.setVisible(false);
+            };
 
-                return null;
-            }
-
-        };
-
-        workerAceptarIncidencia.execute();
+            workerAceptarIncidencia.execute();
+        }
     }//GEN-LAST:event_boton_aceptarMouseClicked
 
     
@@ -360,7 +397,16 @@ public class VentanaNuevasIncidencias extends javax.swing.JDialog {
                 JSONArray jsonArray;
                 JSONObject object;
                 
-                String incidenciaString = app.protocoloMensajes("5||"+idIncidencia+"||");                
+                String incidenciaString = app.protocoloMensajes("5||"+idIncidencia+"||"+estado+"||");  
+                resServidor = respuestaServidor.split("\\|\\|");
+                
+                if(resServidor[0].equals("0") && resServidor[1].equals("sesionCaducada")){
+                    JOptionPane.showMessageDialog(VentanaIncidencia.this, "Su sesión ha caducado", "Message", 0);
+                    dispose();
+                    VentanaLog ventanaLog = new VentanaLog();
+                }
+                
+                
                 jsonArray = (JSONArray) parser.parse(incidenciaString);
                 Incidencia incidencia = null;
                 for(int z=0;z<jsonArray.size();z++){
@@ -372,25 +418,49 @@ public class VentanaNuevasIncidencias extends javax.swing.JDialog {
                             break;                            
                         case 1:
                             
-                            String listaSupervisores = object.get("supervisores").toString();
-                           
-                            if(listaSupervisores.equals(""))
-                                break;
-                            
-                            
-                            String[] aux;                            
-                            aux = listaSupervisores.split(";");
-                            nombres = new String[aux.length];
-                            correos = new String[aux.length];
-                            String[] nombre_correo;
-                            System.out.println(listaSupervisores);
-                            for(int i=0; i<aux.length; i++){
-                                nombre_correo = aux[i].split(":");
-                                nombres[i] = nombre_correo[0];
-                                correos[i] = nombre_correo[1];
+                            switch(estado){
+                                case "NuevaRegistrada":
+                                    String listaSupervisores = object.get("supervisores").toString();
+
+                                    if(!listaSupervisores.equals("null")){
+                                        String[] auxS;                            
+                                        auxS = listaSupervisores.split(";");
+                                        nombreS = new String[auxS.length];
+                                        correoS = new String[auxS.length];
+                                        String[] nombre_correo_sup;
+                                        for(int i=0; i<auxS.length; i++){
+                                            nombre_correo_sup = auxS[i].split(":");
+                                            nombreS[i] = nombre_correo_sup[0];
+                                            correoS[i] = nombre_correo_sup[1];
+                                        }
+
+                                        cargarComboBoxSupervisores();   
+                                    }
+                                    break;
+                                   
+                                case "Validada":
+                                    String listaEmpleados = object.get("empleados").toString();
+                                    if(!listaEmpleados.equals("null")){
+                                        String[] auxE;
+                                        auxE = listaEmpleados.split(";");
+                                        nombreE = new String[auxE.length];
+                                        correoE = new String[auxE.length];
+                                        String[] nombre_correo_emp;
+                                        for(int i=0; i<auxE.length; i++){
+                                            nombre_correo_emp = auxE[i].split(":");
+                                            nombreE[i] = nombre_correo_emp[0];
+                                            correoE[i] = nombre_correo_emp[1];
+                                        }
+                                        cargarComboBoxEmpleados();                                        
+                                    }
+                                //  no ponemos break ya que tambien queremos introducir el nombre del supervisores
+                                case "EnTramite":
+                                    text_nombre_supervisor.setText(object.get("supervisores").toString());
+                                    break;
                             }
 
                             break;
+                            
                         case 2:
                             String imagenBase64 = object.get("imagen").toString();
                             incidencia.setImagenBase64(imagenBase64);                                                       
@@ -413,12 +483,28 @@ public class VentanaNuevasIncidencias extends javax.swing.JDialog {
 
                 ImageIcon ii = new ImageIcon(imageByte);
                 jLabelImagen.setIcon(ii);
-                
-                cargarComboBoxSupervisores();   
-                
+
                 progressBar.setIndeterminate(false);
                 progressBar.setVisible(false);    
                 mostrarComponentes();
+                
+                switch(estado){
+                    case "NuevaRegistrada":
+                        jComboBoxSupervisores.setVisible(true);
+                        boton_aceptar.setVisible(true);
+                        break;
+                        
+                    case "Validada":
+                        jLabelEmpleado.setVisible(true);
+                        jComboBoxEmpleados.setVisible(true);
+                        boton_aceptar.setVisible(true);
+                    
+                    case "EnTramite":
+                        text_nombre_supervisor.setVisible(true);
+                        break;
+        
+                }
+                
                 return null;
             }            
         };   
@@ -427,11 +513,17 @@ public class VentanaNuevasIncidencias extends javax.swing.JDialog {
     }
     
     public void cargarComboBoxSupervisores(){
-        DefaultComboBoxModel model = new DefaultComboBoxModel(nombres);
-        jComboBoxSupervisores.setModel(model);
-        jComboBoxSupervisores.setMaximumRowCount(nombres.length);
-        jComboBoxSupervisores.setEditable(true);
-        
+        DefaultComboBoxModel modelSupervisores = new DefaultComboBoxModel(nombreS);
+        jComboBoxSupervisores.setModel(modelSupervisores);
+        jComboBoxSupervisores.setMaximumRowCount(nombreS.length);
+        jComboBoxSupervisores.setEditable(true);  
+    }
+    
+     public void cargarComboBoxEmpleados(){
+        DefaultComboBoxModel modelEmpleados = new DefaultComboBoxModel(nombreE);
+        jComboBoxEmpleados.setModel(modelEmpleados);
+        jComboBoxEmpleados.setMaximumRowCount(nombreE.length);
+        jComboBoxEmpleados.setEditable(true);   
     }
     
     public void ocultarComponentes(){
@@ -443,9 +535,11 @@ public class VentanaNuevasIncidencias extends javax.swing.JDialog {
         jLabelFecha.setVisible(false);
         jLabelImagen.setVisible(false);
         jLabelSupervisor.setVisible(false);
+        jLabelEmpleado.setVisible(false);
         jLabelTipo.setVisible(false);
         
         jComboBoxSupervisores.setVisible(false);
+        jComboBoxEmpleados.setVisible(false);
         boton_aceptar.setVisible(false);
         
         text_nombre_apellidos.setVisible(false);
@@ -455,7 +549,8 @@ public class VentanaNuevasIncidencias extends javax.swing.JDialog {
         text_descripcion.setVisible(false);
         text_direccion.setVisible(false);
         text_fecha.setVisible(false);
-        text_tipo.setVisible(false);     
+        text_tipo.setVisible(false);    
+        text_nombre_supervisor.setVisible(false);
     }
     
     public void mostrarComponentes(){
@@ -467,10 +562,7 @@ public class VentanaNuevasIncidencias extends javax.swing.JDialog {
         jLabelFecha.setVisible(true);
         jLabelImagen.setVisible(true);
         jLabelSupervisor.setVisible(true);
-        jLabelTipo.setVisible(true);
-        
-        jComboBoxSupervisores.setVisible(true);
-        boton_aceptar.setVisible(true);
+        jLabelTipo.setVisible(true);        
         
         text_nombre_apellidos.setVisible(true);
         text_correo.setVisible(true);
@@ -487,11 +579,13 @@ public class VentanaNuevasIncidencias extends javax.swing.JDialog {
     private javax.swing.JButton boton_aceptar;
     private javax.swing.JButton boton_salir;
     private javax.swing.JLabel imagen_logo;
+    private javax.swing.JComboBox<String> jComboBoxEmpleados;
     private javax.swing.JComboBox<String> jComboBoxSupervisores;
     private javax.swing.JLabel jLabelCorreo;
     private javax.swing.JLabel jLabelDepartamento;
     private javax.swing.JLabel jLabelDescripcion;
     private javax.swing.JLabel jLabelDireccion;
+    private javax.swing.JLabel jLabelEmpleado;
     private javax.swing.JLabel jLabelFecha;
     private javax.swing.JLabel jLabelImagen;
     private javax.swing.JLabel jLabelNombreApellidos;
@@ -508,6 +602,7 @@ public class VentanaNuevasIncidencias extends javax.swing.JDialog {
     private javax.swing.JTextField text_direccion;
     private javax.swing.JTextField text_fecha;
     private javax.swing.JTextField text_nombre_apellidos;
+    private javax.swing.JTextField text_nombre_supervisor;
     private javax.swing.JTextField text_tipo;
     // End of variables declaration//GEN-END:variables
 }

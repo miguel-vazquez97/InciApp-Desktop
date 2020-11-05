@@ -50,11 +50,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     protected String[] resServidor; 
     
     private static final int INCIDENCIAS_NUEVAS = 0;
-    private static final int EN_VALIDACION = 1;
+    private static final int INCIDENCIAS_EN_VALIDACION = 1;
     private static final int INCIDENCIAS_VALIDADAS = 2;
     private static final int INCIDENCIAS_ARREGLADAS = 3;
-    private static final int HISTORIAL_INCIDENCIAS = 4;
+    private static final int INCIDENCIAS_DENEGADAS = 4;
+    private static final int HISTORIAL_INCIDENCIAS = 5;
     private int stateIncidencias = INCIDENCIAS_NUEVAS;
+    
+    private boolean salirPrograma = false;
     
     public VentanaPrincipal(Aplicacion app) {
         initComponents();
@@ -111,27 +114,34 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 //Llamamos a la ventana que nos traera el los detalles de la incidencia
                 switch(stateIncidencias){
                     case 0:
-                        VentanaNuevasIncidencias ventanaNI = new VentanaNuevasIncidencias(VentanaPrincipal.this, true, app, idIncidencia);
-                        ventanaNI.setVisible(true);
+                        VentanaIncidencia ventanaNI = new VentanaIncidencia(VentanaPrincipal.this, true, app, idIncidencia, "NuevaRegistrada");
+                        ventanaNI.setVisible(true);                        
                         break;
                         
                     case 1:
-                        System.out.println("Incidencia en Valicadión");
+                        VentanaIncidencia ventanaET = new VentanaIncidencia(VentanaPrincipal.this, true, app, idIncidencia, "EnTramite");
+                        ventanaET.setVisible(true);
                         break; 
                         
                     case 2:
-                        VentanaIncidenciaValidada ventanaV = new VentanaIncidenciaValidada(VentanaPrincipal.this, true, app, idIncidencia);
-                        ventanaV.setVisible(true);                        
+                        VentanaIncidencia ventanaV = new VentanaIncidencia(VentanaPrincipal.this, true, app, idIncidencia, "Validada");
+                        ventanaV.setVisible(true);
                         break;
                         
                     case 3:
-                        System.out.println("Incidencia Arreglada");
+                        System.out.println("Incidencias Arregladas");
                         break;
                         
                     case 4:
-                        System.out.println("Hisotiral Incidencias");
+                        System.out.println("Incidencias denegadas");
+                        break;
+                        
+                    case 5:
+                        VentanaHistorialIncidencia ventanaH = new VentanaHistorialIncidencia(VentanaPrincipal.this, true, app, idIncidencia);
+                        ventanaH.setVisible(true);
                         break;
                 }
+                mostrarDatosTabla();
              }
          }
         });
@@ -220,18 +230,21 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         imagen_logo = new javax.swing.JLabel();
         nombre_app = new javax.swing.JLabel();
         nombre_admin = new javax.swing.JLabel();
-        jSeparator1 = new javax.swing.JSeparator();
-        jSeparator2 = new javax.swing.JSeparator();
-        jSeparator3 = new javax.swing.JSeparator();
-        jSeparator4 = new javax.swing.JSeparator();
         panel_NI = new javax.swing.JPanel();
         label_NR = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
         panel_EV = new javax.swing.JPanel();
         label_EV = new javax.swing.JLabel();
+        jSeparator2 = new javax.swing.JSeparator();
         panel_V = new javax.swing.JPanel();
         label_V = new javax.swing.JLabel();
+        jSeparator3 = new javax.swing.JSeparator();
         panel_A = new javax.swing.JPanel();
         label_A = new javax.swing.JLabel();
+        jSeparator4 = new javax.swing.JSeparator();
+        panel_D = new javax.swing.JPanel();
+        label_D = new javax.swing.JLabel();
+        jSeparator5 = new javax.swing.JSeparator();
         panel_H = new javax.swing.JPanel();
         label_H = new javax.swing.JLabel();
         boton_salir = new javax.swing.JButton();
@@ -284,18 +297,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         nombre_admin.setText("InciApp");
         panel_izquierda.add(nombre_admin, new org.netbeans.lib.awtextra.AbsoluteConstraints(55, 35, -1, -1));
 
-        jSeparator1.setBackground(new java.awt.Color(46, 134, 193));
-        panel_izquierda.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 210, 190, 2));
-
-        jSeparator2.setBackground(new java.awt.Color(46, 134, 193));
-        panel_izquierda.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 272, 190, 2));
-
-        jSeparator3.setBackground(new java.awt.Color(46, 134, 193));
-        panel_izquierda.add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 334, 190, 2));
-
-        jSeparator4.setBackground(new java.awt.Color(46, 134, 193));
-        panel_izquierda.add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 396, 190, 2));
-
         panel_NI.setBackground(new java.awt.Color(26, 64, 95));
         panel_NI.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         panel_NI.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -335,6 +336,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         panel_izquierda.add(panel_NI, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 150, 210, 60));
 
+        jSeparator1.setBackground(new java.awt.Color(46, 134, 193));
+        panel_izquierda.add(jSeparator1, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 210, 190, 2));
+
         panel_EV.setBackground(new java.awt.Color(26, 64, 95));
         panel_EV.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         panel_EV.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -369,6 +373,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         );
 
         panel_izquierda.add(panel_EV, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 212, 210, 60));
+
+        jSeparator2.setBackground(new java.awt.Color(46, 134, 193));
+        panel_izquierda.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 272, 190, 2));
 
         panel_V.setBackground(new java.awt.Color(26, 64, 95));
         panel_V.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
@@ -405,6 +412,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         panel_izquierda.add(panel_V, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 274, 210, 60));
 
+        jSeparator3.setBackground(new java.awt.Color(46, 134, 193));
+        panel_izquierda.add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 334, 190, 2));
+
         panel_A.setBackground(new java.awt.Color(26, 64, 95));
         panel_A.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         panel_A.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -440,6 +450,47 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         panel_izquierda.add(panel_A, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 336, 210, 60));
 
+        jSeparator4.setBackground(new java.awt.Color(46, 134, 193));
+        panel_izquierda.add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 396, 190, 2));
+
+        panel_D.setBackground(new java.awt.Color(26, 64, 95));
+        panel_D.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        panel_D.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                panel_DMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                panel_DMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                panel_DMouseExited(evt);
+            }
+        });
+
+        label_D.setFont(new java.awt.Font("Dialog", 1, 20)); // NOI18N
+        label_D.setForeground(new java.awt.Color(255, 255, 255));
+        label_D.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        label_D.setText("Denegadas");
+
+        javax.swing.GroupLayout panel_DLayout = new javax.swing.GroupLayout(panel_D);
+        panel_D.setLayout(panel_DLayout);
+        panel_DLayout.setHorizontalGroup(
+            panel_DLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(label_D, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
+        );
+        panel_DLayout.setVerticalGroup(
+            panel_DLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panel_DLayout.createSequentialGroup()
+                .addGap(14, 14, 14)
+                .addComponent(label_D)
+                .addContainerGap(20, Short.MAX_VALUE))
+        );
+
+        panel_izquierda.add(panel_D, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 398, 210, 60));
+
+        jSeparator5.setBackground(new java.awt.Color(46, 134, 193));
+        panel_izquierda.add(jSeparator5, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 458, 190, 2));
+
         panel_H.setBackground(new java.awt.Color(26, 64, 95));
         panel_H.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         panel_H.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -473,7 +524,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 .addContainerGap(20, Short.MAX_VALUE))
         );
 
-        panel_izquierda.add(panel_H, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 398, 210, 60));
+        panel_izquierda.add(panel_H, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 460, 210, 60));
 
         panel_ventanaPrincipal.add(panel_izquierda, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 210, 810));
 
@@ -689,7 +740,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
     //      BOTON SALIR
     private void boton_salirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_salirActionPerformed
-        System.exit(0);
+        salirPrograma = true;
+        logOut();        
     }//GEN-LAST:event_boton_salirActionPerformed
 
     private void boton_salirMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_salirMouseExited
@@ -785,7 +837,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         switch(item){
             case 0:
-                JOptionPane.showMessageDialog(this, "Debe seleccionar un filtro", "¡Filtro!", 1);
+                JOptionPane.showMessageDialog(this, "Debe seleccionar un filtro", "Message", 1);
                 break;
                 
             case 1:
@@ -833,7 +885,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                         && (sdf.format(sdf.parse(fecha2)).equals(fecha2))){}
 
                 } catch (java.text.ParseException ex) {
-                    JOptionPane.showMessageDialog(this, "Fecha debe tener formato yyyy-MM-dd", "Formato fecha", 1);
+                    JOptionPane.showMessageDialog(this, "Fecha debe tener formato yyyy-MM-dd", "Message", 1);
                     return;
                 }
 
@@ -874,11 +926,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                         cargarTabla(incidenciasFiltradas);
 
                     }else{
-                        JOptionPane.showMessageDialog(this, "La segunda fecha debe ser posterior a la primera", "Fecha incorrecta", 1);
+                        JOptionPane.showMessageDialog(this, "La segunda fecha debe ser posterior a la primera", "Message", 1);
                     }
 
                 }catch (java.time.DateTimeException dte){
-                    JOptionPane.showMessageDialog(this, "Introduzca fecha valida", "Fecha incorrecta", 1);
+                    JOptionPane.showMessageDialog(this, "Introduzca fecha valida", "Message", 1);
                 }
                 break;
         }
@@ -893,7 +945,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     
     //      PANEL EN VALIDACION
     private void panel_EVMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panel_EVMouseClicked
-        stateIncidencias = EN_VALIDACION;
+        stateIncidencias = INCIDENCIAS_EN_VALIDACION;
         titulo.setText("EN VALIDACIÓN");
         mostrarDatosTabla();
     }//GEN-LAST:event_panel_EVMouseClicked
@@ -905,6 +957,22 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private void panel_EVMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panel_EVMouseExited
          panel_EV.setBackground(new java.awt.Color(26,64,95));
     }//GEN-LAST:event_panel_EVMouseExited
+
+    
+    //      PANEL INCIDENCIAS DENEGADAS
+    private void panel_DMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panel_DMouseClicked
+        stateIncidencias = INCIDENCIAS_DENEGADAS;
+        titulo.setText("DENEGADAS");
+        mostrarDatosTabla();
+    }//GEN-LAST:event_panel_DMouseClicked
+
+    private void panel_DMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panel_DMouseEntered
+         panel_D.setBackground(new java.awt.Color(46,134,193));
+    }//GEN-LAST:event_panel_DMouseEntered
+
+    private void panel_DMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_panel_DMouseExited
+        panel_D.setBackground(new java.awt.Color(26,64,95));
+    }//GEN-LAST:event_panel_DMouseExited
 
 
     //      METODOS
@@ -920,7 +988,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                           
                 if(resServidor[0].equals("6") && resServidor[1].equals("logOutAdminOk")){
                     dispose();
-                    VentanaLog ventanaLog = new VentanaLog();
+                    
+                    if(!salirPrograma){
+                        VentanaLog ventanaLog = new VentanaLog();
+                    }else{
+                        System.exit(0);
+                    }
                 }
 
                 return null;
@@ -947,7 +1020,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                 }
                 
                 if(resServidor[0].equals("0") && resServidor[1].equals("sesionCaducada")){
-                    JOptionPane.showMessageDialog(VentanaPrincipal.this, "Su sesión ha caducado", "¡Sesion finalizada!", 0);
+                    JOptionPane.showMessageDialog(VentanaPrincipal.this, "Su sesión ha caducado", "Message", 0);
                     dispose();
                     VentanaLog ventanaLog = new VentanaLog();
                 }
@@ -996,7 +1069,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
     private javax.swing.JLabel label_A;
+    private javax.swing.JLabel label_D;
     private javax.swing.JLabel label_EV;
     private javax.swing.JLabel label_H;
     private javax.swing.JLabel label_NR;
@@ -1005,6 +1080,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JLabel nombre_admin;
     private javax.swing.JLabel nombre_app;
     private javax.swing.JPanel panel_A;
+    private javax.swing.JPanel panel_D;
     private javax.swing.JPanel panel_EV;
     private javax.swing.JPanel panel_H;
     private javax.swing.JPanel panel_NI;

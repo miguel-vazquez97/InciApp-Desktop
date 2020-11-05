@@ -300,7 +300,7 @@ public class VentanaLog extends JFrame {
             VentanaRegistrarUsuario ventanaRegistrar = new VentanaRegistrarUsuario(this, true, app, 1);
             ventanaRegistrar.setVisible(true);
         } else {
-            JOptionPane.showMessageDialog(this, "Debe conectarse al servidor", "¡Atención!", 1);
+            JOptionPane.showMessageDialog(this, "Debe conectarse al servidor", "Message", 1);
         }
 
         boton_registrar.setEnabled(true);
@@ -311,7 +311,7 @@ public class VentanaLog extends JFrame {
 
         //comprobamos si se ha conectado al servidor automaticamente
         if (app.getConectadoServidor()) {
-            JOptionPane.showMessageDialog(this, "Ya está conectado al servidor", "Conexión establecida", 1);
+            JOptionPane.showMessageDialog(this, "Ya está conectado al servidor", "Message", 1);
         } else {
             ConectarServidor con = new ConectarServidor(this, true, app);
             con.setVisible(true);
@@ -388,7 +388,7 @@ public class VentanaLog extends JFrame {
                     }
 
                 } else {
-                    JOptionPane.showMessageDialog(VentanaLog.this, "Debe conectarse al servidor", "¡Atención!", 1);
+                    JOptionPane.showMessageDialog(VentanaLog.this, "Debe conectarse al servidor", "Message", 1);
                 }
 
                 boton_login.setVisible(true);
