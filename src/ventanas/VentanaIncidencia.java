@@ -21,25 +21,48 @@ import sun.misc.BASE64Decoder;
 public class VentanaIncidencia extends javax.swing.JDialog {
 
     protected Aplicacion app;
+    protected VentanaPrincipal vp;
     protected int idIncidencia;
     protected String estado;
     
-    String respuestaServidor;
-    String[] resServidor;    
-    byte[] respuestaServidorByte;
+    protected String respuestaServidor;
+    protected String[] resServidor;    
+    protected byte[] respuestaServidorByte;
     
-    String[] nombreS, correoS, nombreE, correoE;
+    protected String[] nombreS, correoS, nombreE, correoE;
 
-    public VentanaIncidencia(java.awt.Frame parent, boolean modal, Aplicacion app, int idIncidencia, String estado) {
-        super(parent, modal);     
+    public VentanaIncidencia(VentanaPrincipal vp, boolean modal, Aplicacion app, int idIncidencia, String estado) {
+        super(vp, modal);     
         initComponents();
         
+        this.vp=vp;
         this.app=app;
         this.idIncidencia=idIncidencia;
         this.estado = estado;
         
         setSize(1440, 810);
         setLocationRelativeTo(null);
+        
+        switch(estado){
+            case "NuevaRegistrada":
+                titulo_ventana.setText("InciApp  -  Nueva Incidencia");
+                break;
+            case "EnTramite":
+                titulo_ventana.setText("InciApp  -  En Tramite");
+                break;
+            case "Validada":
+                titulo_ventana.setText("InciApp  -  Validada");
+                break;
+            case "EnArreglo":
+                titulo_ventana.setText("InciApp  -  En Arreglo");
+                break;
+            case "ValidarArreglo":
+                titulo_ventana.setText("InciApp  -  Validar Arreglo");
+                break;
+            case "Arreglada":
+                titulo_ventana.setText("InciApp  -  Arreglada");
+                break;
+        }
                                 
         datosIncidencia();      
                
@@ -54,7 +77,7 @@ public class VentanaIncidencia extends javax.swing.JDialog {
         panelUp_ventana = new javax.swing.JPanel();
         boton_salir = new javax.swing.JButton();
         imagen_logo = new javax.swing.JLabel();
-        nombre_app = new javax.swing.JLabel();
+        titulo_ventana = new javax.swing.JLabel();
         jLabelNombreApellidos = new javax.swing.JLabel();
         text_nombre_apellidos = new javax.swing.JTextField();
         jLabelCorreo = new javax.swing.JLabel();
@@ -75,6 +98,7 @@ public class VentanaIncidencia extends javax.swing.JDialog {
         text_nombre_supervisor = new javax.swing.JTextField();
         jLabelEmpleado = new javax.swing.JLabel();
         jComboBoxEmpleados = new javax.swing.JComboBox<>();
+        text_nombre_empleado = new javax.swing.JTextField();
         jLabelImagen = new javax.swing.JLabel();
         progressBar = new javax.swing.JProgressBar();
         boton_aceptar = new javax.swing.JButton();
@@ -123,9 +147,9 @@ public class VentanaIncidencia extends javax.swing.JDialog {
 
         imagen_logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/logo_inciapp_icono.jpg"))); // NOI18N
 
-        nombre_app.setFont(new java.awt.Font("Yu Gothic UI", 1, 24)); // NOI18N
-        nombre_app.setForeground(new java.awt.Color(255, 255, 255));
-        nombre_app.setText("InciApp  -  Nueva Incidencia");
+        titulo_ventana.setFont(new java.awt.Font("Yu Gothic UI", 1, 24)); // NOI18N
+        titulo_ventana.setForeground(new java.awt.Color(255, 255, 255));
+        titulo_ventana.setText("InciApp  -  Nueva Incidencia");
 
         javax.swing.GroupLayout panelUp_ventanaLayout = new javax.swing.GroupLayout(panelUp_ventana);
         panelUp_ventana.setLayout(panelUp_ventanaLayout);
@@ -135,7 +159,7 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                 .addGap(30, 30, 30)
                 .addComponent(imagen_logo, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(nombre_app)
+                .addComponent(titulo_ventana)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 1017, Short.MAX_VALUE)
                 .addComponent(boton_salir, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(20, 20, 20))
@@ -146,7 +170,7 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                 .addGap(13, 13, 13)
                 .addGroup(panelUp_ventanaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(imagen_logo, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(nombre_app)
+                    .addComponent(titulo_ventana)
                     .addComponent(boton_salir, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(25, Short.MAX_VALUE))
         );
@@ -265,6 +289,12 @@ public class VentanaIncidencia extends javax.swing.JDialog {
         jComboBoxEmpleados.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
         panel_principal.add(jComboBoxEmpleados, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 680, 310, 30));
 
+        text_nombre_empleado.setEditable(false);
+        text_nombre_empleado.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
+        text_nombre_empleado.setForeground(new java.awt.Color(60, 63, 65));
+        text_nombre_empleado.setBorder(null);
+        panel_principal.add(text_nombre_empleado, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 680, 310, 25));
+
         jLabelImagen.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelImagen.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/logo_inciapp.png"))); // NOI18N
         panel_principal.add(jLabelImagen, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 300, -1, -1));
@@ -341,11 +371,15 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                     switch(estado){
                         case "NuevaRegistrada":
                             respuestaServidor = app.protocoloMensajes("6||"+idIncidencia+"||"+app.getCorreo()+"||"+correoS[jComboBoxSupervisores.getSelectedIndex()]+"||");
-                            resServidor = respuestaServidor.split("\\|\\|");
-                            resServidor = respuestaServidor.split("\\|\\|");
-                
+                            if(respuestaServidor==null){
+                                JOptionPane.showMessageDialog(VentanaIncidencia.this, "Error en la comunicación. Vuelva a intentarlo más tarde.", "Message", 1);
+                                progressBar.setVisible(false);
+                                return null;
+                            }
+                            resServidor = respuestaServidor.split("\\|\\|");                
                             if(resServidor[0].equals("0") && resServidor[1].equals("sesionCaducada")){
                                 JOptionPane.showMessageDialog(VentanaIncidencia.this, "Su sesión ha caducado", "Message", 0);
+                                vp.setVisible(false);
                                 dispose();
                                 VentanaLog ventanaLog = new VentanaLog();
                             }else if(!resServidor[0].equals("9") && !resServidor[1].equals("supervisorAsignadoOk")){
@@ -356,14 +390,21 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                             
                         case "Validada":
                             respuestaServidor = app.protocoloMensajes("8||"+idIncidencia+"||"+correoE[jComboBoxEmpleados.getSelectedIndex()]+"||");
-                            resServidor = respuestaServidor.split("\\|\\|");
-
+                            if(respuestaServidor==null){
+                                JOptionPane.showMessageDialog(VentanaIncidencia.this, "Error en la comunicación. Vuelva a intentarlo más tarde.", "Message", 1);
+                                progressBar.setVisible(false);
+                                return null;
+                            }
+                            resServidor = respuestaServidor.split("\\|\\|");                            
                             if(resServidor[0].equals("0") && resServidor[1].equals("sesionCaducada")){
                                 JOptionPane.showMessageDialog(VentanaIncidencia.this, "Su sesión ha caducado", "Message", 0);
+                                vp.setVisible(false);
                                 dispose();
                                 VentanaLog ventanaLog = new VentanaLog();
-                            }else if(!resServidor[0].equals("11") && !resServidor[1].equals("empleadoAsignadoOk")){
-                                JOptionPane.showMessageDialog(VentanaIncidencia.this, "Empleado no asiganado. Recarge la tabla e intentelo de nuevo", "Message", 2);
+                            }else{ 
+                                if(!resServidor[0].equals("11") && !resServidor[1].equals("empleadoAsignadoOk")){
+                                    JOptionPane.showMessageDialog(VentanaIncidencia.this, "Empleado no asiganado. Recarge la tabla e intentelo de nuevo", "Message", 2);
+                                }
                             }
                             
                             break;
@@ -398,14 +439,18 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                 JSONObject object;
                 
                 String incidenciaString = app.protocoloMensajes("5||"+idIncidencia+"||"+estado+"||");  
-                resServidor = respuestaServidor.split("\\|\\|");
-                
+                if(respuestaServidor==null){
+                    JOptionPane.showMessageDialog(VentanaIncidencia.this, "Error en la comunicación. Vuelva a intentarlo más tarde.", "Message", 1);
+                    progressBar.setVisible(false);
+                    return null;
+                }
+                resServidor = incidenciaString.split("\\|\\|");              
                 if(resServidor[0].equals("0") && resServidor[1].equals("sesionCaducada")){
                     JOptionPane.showMessageDialog(VentanaIncidencia.this, "Su sesión ha caducado", "Message", 0);
+                    vp.setVisible(false);
                     dispose();
                     VentanaLog ventanaLog = new VentanaLog();
                 }
-                
                 
                 jsonArray = (JSONArray) parser.parse(incidenciaString);
                 Incidencia incidencia = null;
@@ -438,8 +483,15 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                                     }
                                     break;
                                    
-                                case "Validada":
+                                case "EnTramite":
+                                    text_nombre_supervisor.setText(object.get("supervisores").toString());
+                                    break;
+                                    
+                                case "Validada":                                    
+                                    text_nombre_supervisor.setText(object.get("supervisores").toString());
+                                    
                                     String listaEmpleados = object.get("empleados").toString();
+                                    System.out.println(listaEmpleados);
                                     if(!listaEmpleados.equals("null")){
                                         String[] auxE;
                                         auxE = listaEmpleados.split(";");
@@ -453,10 +505,15 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                                         }
                                         cargarComboBoxEmpleados();                                        
                                     }
-                                //  no ponemos break ya que tambien queremos introducir el nombre del supervisores
-                                case "EnTramite":
-                                    text_nombre_supervisor.setText(object.get("supervisores").toString());
                                     break;
+                                    
+                                case "EnArreglo":
+                                case "ValidarArreglo":
+                                case "Arreglada":
+                                    text_nombre_supervisor.setText(object.get("supervisores").toString());
+                                    text_nombre_empleado.setText(object.get("empleados").toString());
+                                    break;
+                                
                             }
 
                             break;
@@ -491,18 +548,26 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                 switch(estado){
                     case "NuevaRegistrada":
                         jComboBoxSupervisores.setVisible(true);
-                        boton_aceptar.setVisible(true);
+                        boton_aceptar.setVisible(true);                        
                         break;
                         
                     case "Validada":
                         jLabelEmpleado.setVisible(true);
                         jComboBoxEmpleados.setVisible(true);
                         boton_aceptar.setVisible(true);
-                    
+                    //no ponemos break para que muestro el nombre del supervisor
                     case "EnTramite":
                         text_nombre_supervisor.setVisible(true);
                         break;
-        
+                        
+                    case "EnArreglo":
+                    case "ValidarArreglo":
+                    case "Arreglada":
+                        jLabelSupervisor.setVisible(true);
+                        jLabelEmpleado.setVisible(true);                                                                        
+                        text_nombre_supervisor.setVisible(true);
+                        text_nombre_empleado.setVisible(true);
+                        break;
                 }
                 
                 return null;
@@ -551,6 +616,7 @@ public class VentanaIncidencia extends javax.swing.JDialog {
         text_fecha.setVisible(false);
         text_tipo.setVisible(false);    
         text_nombre_supervisor.setVisible(false);
+        text_nombre_empleado.setVisible(false);
     }
     
     public void mostrarComponentes(){
@@ -592,7 +658,6 @@ public class VentanaIncidencia extends javax.swing.JDialog {
     private javax.swing.JLabel jLabelSupervisor;
     private javax.swing.JLabel jLabelTipo;
     private javax.swing.JScrollPane jScrollDescripcion;
-    private javax.swing.JLabel nombre_app;
     private javax.swing.JPanel panelUp_ventana;
     private javax.swing.JPanel panel_principal;
     private javax.swing.JProgressBar progressBar;
@@ -602,7 +667,9 @@ public class VentanaIncidencia extends javax.swing.JDialog {
     private javax.swing.JTextField text_direccion;
     private javax.swing.JTextField text_fecha;
     private javax.swing.JTextField text_nombre_apellidos;
+    private javax.swing.JTextField text_nombre_empleado;
     private javax.swing.JTextField text_nombre_supervisor;
     private javax.swing.JTextField text_tipo;
+    private javax.swing.JLabel titulo_ventana;
     // End of variables declaration//GEN-END:variables
 }

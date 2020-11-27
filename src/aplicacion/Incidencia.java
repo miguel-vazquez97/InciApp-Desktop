@@ -1,7 +1,4 @@
 package aplicacion;
-
-import java.util.Date;
-
 /**
  *
  * @author mivap

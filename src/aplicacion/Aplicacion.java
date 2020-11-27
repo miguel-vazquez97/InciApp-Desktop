@@ -33,11 +33,19 @@ public class Aplicacion {
     protected  DataInputStream dataInputStream;
     
     protected  String [] mensajeUsuario;
-    protected String respuestaUsuario;    
+    protected String respuestaUsuario;   
+    protected int time;
     
     protected String respuestaServidor;
     protected byte[] respuestaServidorByte;   
     protected String[] resServidor;
+    
+    protected byte[] arrayBytesBase64;
+    protected String base64;
+    protected String cadena;
+    protected JSONParser parser;
+    protected int size;
+    
     
     static boolean transicionNula = false;
     private int state = INICIO;
@@ -46,11 +54,21 @@ public class Aplicacion {
     private static final int LOG_ADMIN = 2;
     private static final int LOG_OUT = 3;
     private static final int INCIDENCIAS_TABLA = 4;
-    private static final int DATOS_INCIDENCIA_NUEVA_REGISTRADA = 5;
+    private static final int DATOS_INCIDENCIA = 5;
     private static final int ASIGNAR_INCIDENCIA_SUPERVISOR = 6;
-    private static final int LISTADO_EMPLEADOS = 7;
     private static final int ASIGNAR_INCIDENCIA_EMPLEADO = 8;
+    private static final int DATOS_INCIDENCIA_ARREGLADA = 9;
+    private static final int SOLUCIONAR_INCIDENCIA = 10;
     private static final int DETALLES_HISTORIAL_INCIDENCIA = 11;
+    private static final int DENEGAR_SOLUCION_INCIDENCIA = 12;
+    private static final int LISTADO_DEPARTAMENTOS = 13;
+    private static final int REGISTRAR_DEPARTAMENTO = 14;
+    private static final int ELIMINAR_DEPARTAMENTO = 15;
+    
+    private static final int LISTADO_USUARIOS = 20;
+    private static final int DETALLES_USUARIO = 21;
+    private static final int MODIFICAR_USUARIO = 22;
+    private static final int ELIMINAR_USUARIO = 23;
     
     BASE64Decoder decoder;
     
@@ -98,19 +116,19 @@ public class Aplicacion {
     
     public boolean conectarConServidor(String ip, int puerto){    
         try {    
-            socket = new Socket(ip,puerto);   
+            socket = new Socket(ip,puerto);             
             enviarServidor = socket.getOutputStream();
             leerServidor = socket.getInputStream();  
             dataInputStream = new DataInputStream(socket.getInputStream());
             
-            //while(leerServidor.available()<1){}
             while((leerServidor.read(respuestaServidorByte = new byte[leerServidor.available()]))<1){}
-            //respuestaServidorByte = new byte[leerServidor.available()];
-            //leerServidor.read(respuestaServidorByte);
             respuestaServidor = new String(respuestaServidorByte);
 
             System.out.println(respuestaServidor);  
             conectadoServidor=true;
+            
+            enviarServidor.write("ConectadoAppEscritorio||0||".getBytes());
+            enviarServidor.flush();
             
         } catch (ConnectException ce) {
             System.out.println("No se ha establecido conexión con el servidor.");
@@ -130,6 +148,9 @@ public class Aplicacion {
             if(leerServidor!=null)
                 leerServidor.close();
             
+            if(dataInputStream!=null)
+                dataInputStream.close();
+            
             if(socket!=null)
                 socket.close();
             
@@ -141,20 +162,15 @@ public class Aplicacion {
     
     public String protocoloMensajes(String mensaje){
        mensajeUsuario = mensaje.split("\\|\\|");
-       respuestaUsuario = "";        
+       respuestaUsuario = "";           
         
         try{
             
             //comprobamos si hemos recibido algun mensaje por parte del servidor
-            if(leerServidor.available()>0){
+            //esto será por si enviamos algún mensaje y el servidor tardó más de 5s en respondernos            
+            //ya que si tarda más de 5s informaremos al usuario que ha habido problemas con la comunicación            
+            while(leerServidor.available()>0){
                 leerServidor.read(respuestaServidorByte = new byte[leerServidor.available()]);
-                respuestaUsuario = new String(respuestaServidorByte);
-                resServidor = respuestaUsuario.split("\\|\\|");
-                //si recibimos esta respuesta significará que la sesion en la que nos encontrabamos ha expirado
-                if(resServidor[0].equals("0") && resServidor[1].equals("sesionCaducada")){                   
-                    return respuestaUsuario;
-                }
-                respuestaUsuario = "";
             }
             
             
@@ -186,7 +202,7 @@ public class Aplicacion {
                                 break;
                                 
                             case "5":
-                                state = DATOS_INCIDENCIA_NUEVA_REGISTRADA;
+                                state = DATOS_INCIDENCIA;
                                 transicionNula=true;
                                 break;
                                 
@@ -195,13 +211,18 @@ public class Aplicacion {
                                 transicionNula=true;
                                 break;
                                 
-                            case "7":
-                                state = LISTADO_EMPLEADOS;
+                            case "8":
+                                state = ASIGNAR_INCIDENCIA_EMPLEADO;
                                 transicionNula=true;
                                 break;
                                 
-                            case "8":
-                                state = ASIGNAR_INCIDENCIA_EMPLEADO;
+                            case "9":
+                                state = DATOS_INCIDENCIA_ARREGLADA;
+                                transicionNula=true;
+                                break;
+                                
+                            case "10":
+                                state = SOLUCIONAR_INCIDENCIA;
                                 transicionNula=true;
                                 break;
                                 
@@ -209,41 +230,86 @@ public class Aplicacion {
                                 state = DETALLES_HISTORIAL_INCIDENCIA;
                                 transicionNula=true;
                                 break;
+                                
+                            case "12":
+                                state = DENEGAR_SOLUCION_INCIDENCIA;
+                                transicionNula=true;
+                                break;
+                                
+                            case "13":
+                                state = LISTADO_DEPARTAMENTOS;
+                                transicionNula=true;
+                                break;
+                                
+                            case "14":
+                                state = REGISTRAR_DEPARTAMENTO;
+                                transicionNula=true;
+                                break;
+                                
+                            case "15":
+                                state = ELIMINAR_DEPARTAMENTO;
+                                transicionNula=true;
+                                break;
+                                
+                            case "20":
+                                state = LISTADO_USUARIOS;
+                                transicionNula=true;
+                                break;
+                                
+                            case "21":
+                                state = DETALLES_USUARIO;
+                                transicionNula=true;
+                                break;
+                                
+                            case "22":
+                                state = MODIFICAR_USUARIO;
+                                transicionNula=true;
+                                break;
+                                
+                            case "23":
+                                state = ELIMINAR_USUARIO;
+                                transicionNula=true;
+                                break;
                         }                    
                         break;
 
+
                     case REGISTRAR_USUARIO:
-
-                        enviarServidor.write(mensaje.getBytes());
-                        enviarServidor.flush();
-
-                        while((leerServidor.read(respuestaServidorByte = new byte[leerServidor.available()]))<1){}                       
-                        respuestaUsuario = new String(respuestaServidorByte);
-
-                        state = INICIO;
-                        transicionNula=false;
-                        break;
-
                     case LOG_ADMIN:
+                    case LOG_OUT:  
+                    case DATOS_INCIDENCIA:
+                    case ASIGNAR_INCIDENCIA_SUPERVISOR: 
+                    case ASIGNAR_INCIDENCIA_EMPLEADO: 
+                    case SOLUCIONAR_INCIDENCIA:   
+                    case DENEGAR_SOLUCION_INCIDENCIA:
+                    case REGISTRAR_DEPARTAMENTO:                        
+                    case ELIMINAR_DEPARTAMENTO:
+                    case MODIFICAR_USUARIO:                    
+                    case ELIMINAR_USUARIO:    
 
                         enviarServidor.write(mensaje.getBytes());
                         enviarServidor.flush();
-
-                        while((leerServidor.read(respuestaServidorByte = new byte[leerServidor.available()]))<1){}                       
+                        
+                        time=0;
+                        while(leerServidor.available()<1 && time<5000){
+                            try {
+                                Thread.sleep(500);
+                                time += 500;
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                        if(time==5000){
+                            state = INICIO;
+                            transicionNula=false;
+                            return null;
+                        }
+                        
+                        leerServidor.read(respuestaServidorByte = new byte[leerServidor.available()]);
                         respuestaUsuario = new String(respuestaServidorByte);
+                        
+                        if(state==LOG_OUT)
+                            cerrarFlujos();
 
-                        state = INICIO;
-                        transicionNula=false;
-                        break;
-                        
-                    case LOG_OUT:
-                        
-                        enviarServidor.write(mensaje.getBytes());
-                        enviarServidor.flush();
-                        
-                        while((leerServidor.read(respuestaServidorByte = new byte[leerServidor.available()]))<1){}                       
-                        respuestaUsuario = new String(respuestaServidorByte);
-                        
                         state = INICIO;
                         transicionNula=false;
                         break;
@@ -252,15 +318,29 @@ public class Aplicacion {
                         
                         enviarServidor.write(mensaje.getBytes());
                         enviarServidor.flush();
+
+                        time=0;
+                        while(leerServidor.available()<1 && time<5000){
+                            try {
+                                Thread.sleep(500);
+                                time += 500;
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                        if(time==5000){
+                            state = INICIO;
+                            transicionNula=false;
+                            return null;
+                        }
                     
-                        int size = dataInputStream.readInt();
+                        size = dataInputStream.readInt();
                         
-                        JSONParser parser = new JSONParser();
+                        parser = new JSONParser();
                         arrayIncidencias = new ArrayList<>();
-                        
+                                                
                         String object;                        
                         int id;
-                        String cadena_id,fech,tipo,descripcion,direccion;
+                        String cadena_id,estado,fech,tipo,descripcion,direccion;
                         Date fecha;
                         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                         
@@ -269,13 +349,13 @@ public class Aplicacion {
                             JSONObject obj = (JSONObject) parser.parse(object);
                             cadena_id = (String) obj.get("id").toString();
                             id = Integer.parseInt(cadena_id);
+                            estado = (String) obj.get("estado").toString();
                             tipo = (String) obj.get("tipo").toString();
                             fech = (String) obj.get("fecha").toString();                      
                             fecha = formatter.parse(fech);        
                             descripcion = (String) obj.get("descripcion").toString();
                             direccion = (String) obj.get("direccion").toString();
-                            RowTablaIncidencia incidencia = new RowTablaIncidencia(id,fecha,tipo,descripcion,direccion);
-                            //Incidencia incidencia = new RowTablaIncidencia( id,obj.get("tipo"),obj.get("descripcion"),obj.get("ubicacion"));
+                            RowTablaIncidencia incidencia = new RowTablaIncidencia(id, estado, fecha,tipo,descripcion,direccion);
                             arrayIncidencias.add(incidencia);
                         }
                         
@@ -284,51 +364,42 @@ public class Aplicacion {
                         state = INICIO;
                         transicionNula=false;
                         break;
+
                         
-                    case DATOS_INCIDENCIA_NUEVA_REGISTRADA:
-                        
-                        enviarServidor.write(mensaje.getBytes());
-                        enviarServidor.flush();
-                        
-                        while((leerServidor.read(respuestaServidorByte = new byte[leerServidor.available()]))<1){}   
-                        respuestaUsuario = new String(respuestaServidorByte);
-                        
-                        state = INICIO;
-                        transicionNula=false;
-                        break;
-                        
-                    case ASIGNAR_INCIDENCIA_SUPERVISOR:
+                    case DATOS_INCIDENCIA_ARREGLADA:
                         
                         enviarServidor.write(mensaje.getBytes());
                         enviarServidor.flush();
                         
-                        while((leerServidor.read(respuestaServidorByte = new byte[leerServidor.available()]))<1){}   
-                        respuestaUsuario = new String(respuestaServidorByte);
+                        time=0;
+                        while(leerServidor.available()<1 && time<5000){
+                            try {
+                                Thread.sleep(500);
+                                time += 500;
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                        if(time==5000){
+                            state = INICIO;
+                            transicionNula=false;
+                            return null;
+                        }
                         
-                        state = INICIO; 
-                        transicionNula=false;
-                        break;
-                        
-                    case LISTADO_EMPLEADOS:
-                        
-                        enviarServidor.write(mensaje.getBytes());
-                        enviarServidor.flush();   
-                        
-                        respuestaUsuario = dataInputStream.readUTF();
+                        size = dataInputStream.readInt();
+                        base64="";
+                        cadena="";
+                        while(base64.length()<size){
+                            arrayBytesBase64 = new byte[dataInputStream.available()];
+                            dataInputStream.read(arrayBytesBase64);
+                            cadena = new String(arrayBytesBase64);
+                            base64 += cadena;
+                        }
+
+                        decoder = new BASE64Decoder();
+                        byte[] arrayBytesArreglada = decoder.decodeBuffer(base64);
+                        respuestaUsuario = new String(arrayBytesArreglada);
 
                         state = INICIO;
-                        transicionNula=false;
-                        break;
-                        
-                    case ASIGNAR_INCIDENCIA_EMPLEADO:
-                        
-                        enviarServidor.write(mensaje.getBytes());
-                        enviarServidor.flush();
-                        
-                        while((leerServidor.read(respuestaServidorByte = new byte[leerServidor.available()]))<1){}   
-                        respuestaUsuario = new String(respuestaServidorByte);                        
-                        
-                        state = INICIO; 
                         transicionNula=false;
                         break;
                         
@@ -336,14 +407,26 @@ public class Aplicacion {
                         
                         enviarServidor.write(mensaje.getBytes());
                         enviarServidor.flush();
+
+                        time=0;
+                        while(leerServidor.available()<1 && time<5000){
+                            try {
+                                Thread.sleep(500);
+                                time += 500;
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                        if(time==5000){
+                            state = INICIO;
+                            transicionNula=false;
+                            return null;
+                        }    
                         
                         //tamano que tendra nuestra cadena en base64
                         size = dataInputStream.readInt();
 
-                        while(dataInputStream.available()<1){}
-
-                        byte[] arrayBytesBase64;
-                        String base64="", cadena;
+                        base64="";
+                        cadena="";
                         while(base64.length()<size){
                             arrayBytesBase64 = new byte[dataInputStream.available()];
                             //recibimos bytes
@@ -353,7 +436,7 @@ public class Aplicacion {
                             //unimos a la cadena que formara nuestro Base64
                             base64 += cadena;
                         }
-
+                        
                         //descodificamos a bytes
                         decoder = new BASE64Decoder();
                         byte[] arrayBytes = decoder.decodeBuffer(base64);
@@ -363,11 +446,74 @@ public class Aplicacion {
                         state = INICIO;
                         transicionNula=false;
                         break;
-                            
+                        
+                    case LISTADO_USUARIOS:
+                        
+                        enviarServidor.write(mensaje.getBytes());
+                        enviarServidor.flush();
+                        
+                        time=0;
+                        while(leerServidor.available()<1 && time<5000){
+                            try {
+                                Thread.sleep(500);
+                                time += 500;
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                        if(time==5000){
+                            state = INICIO;
+                            transicionNula=false;
+                            return null;
+                        }    
+                    
+                        size = dataInputStream.readInt();
+                        base64="";
+                        cadena="";
+                        while(base64.length()<size){
+                            arrayBytesBase64 = new byte[dataInputStream.available()];
+                            dataInputStream.read(arrayBytesBase64);
+                            cadena = new String(arrayBytesBase64);
+                            base64 += cadena;
+                        }
+                        
+                        respuestaUsuario = base64;
+                        
+                        state = INICIO;
+                        transicionNula=false;
+                        break;
+                        
+                    case DETALLES_USUARIO:
+                    case LISTADO_DEPARTAMENTOS:
+                        
+                        enviarServidor.write(mensaje.getBytes());
+                        enviarServidor.flush();
+                        
+                        time=0;
+                        while(leerServidor.available()<1 && time<5000){
+                            try {
+                                Thread.sleep(500);
+                                time += 500;
+                            } catch (InterruptedException e) {
+                            }
+                        }
+                        if(time==5000){
+                            state = INICIO;
+                            transicionNula=false;
+                            return null;
+                        }
+                        
+                        respuestaUsuario = dataInputStream.readUTF();  
+                        
+                        state = INICIO;
+                        transicionNula=false;
+                        break;
+     
                 }            
             }while(transicionNula==true);
             
         }catch (SocketException es) {   
+            //si entramos en la excepcion significa que el socket ha sido cerrado por parte del server
+            //es decir, la sesion ha caducado
             respuestaUsuario=codigos[0];            
         }catch (IOException ex) {
             Logger.getLogger(Aplicacion.class.getName()).log(Level.SEVERE, null, ex);
@@ -376,7 +522,7 @@ public class Aplicacion {
         } catch (java.text.ParseException ex) {
             System.out.println("Error parsear fecha Protocolo Aplicacion");       
         }
-        
+        System.out.println(respuestaUsuario);
         return respuestaUsuario;
     }
     

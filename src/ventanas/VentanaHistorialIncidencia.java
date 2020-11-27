@@ -20,16 +20,18 @@ import sun.misc.BASE64Decoder;
 public class VentanaHistorialIncidencia extends javax.swing.JDialog {
     
     protected Aplicacion app;
+    protected VentanaPrincipal vp;
     protected int idIncidencia;
     
     protected String respuestaServidor;
     protected String[] resServidor; 
-    BASE64Decoder decoder;
+    protected BASE64Decoder decoder;
 
-    public VentanaHistorialIncidencia(java.awt.Frame parent, boolean modal, Aplicacion app, int idIncidencia) {
-        super(parent, modal);
+    public VentanaHistorialIncidencia(VentanaPrincipal vp, boolean modal, Aplicacion app, int idIncidencia) {
+        super(vp, modal);
         initComponents();
         
+        this.vp=vp;
         this.app=app;
         this.idIncidencia=idIncidencia;
         
@@ -83,10 +85,22 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
         jLabelFechaET = new javax.swing.JLabel();
         text_fechaET = new javax.swing.JTextField();
         jSeparator2 = new javax.swing.JSeparator();
+        jLabelValidada = new javax.swing.JLabel();
+        jLabelFechaV = new javax.swing.JLabel();
+        text_fechaV = new javax.swing.JTextField();
+        jSeparator3 = new javax.swing.JSeparator();
         jLabelEnArreglo = new javax.swing.JLabel();
         jLabelFechaEA = new javax.swing.JLabel();
         text_fechaEA = new javax.swing.JTextField();
-        jSeparator3 = new javax.swing.JSeparator();
+        jSeparator4 = new javax.swing.JSeparator();
+        jLabelValidarArreglo = new javax.swing.JLabel();
+        jLabelFechaVA = new javax.swing.JLabel();
+        text_fechaVA = new javax.swing.JTextField();
+        jSeparator5 = new javax.swing.JSeparator();
+        jLabelArreglada = new javax.swing.JLabel();
+        jLabelFechaA = new javax.swing.JLabel();
+        text_fechaA = new javax.swing.JTextField();
+        jSeparator6 = new javax.swing.JSeparator();
         jLabelSolucionada = new javax.swing.JLabel();
         jLabelFechaS = new javax.swing.JLabel();
         text_fechaS = new javax.swing.JTextField();
@@ -94,13 +108,13 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
         jScrollDescripcionS = new javax.swing.JScrollPane();
         text_descripcionS = new javax.swing.JTextArea();
         jLabelImagenS = new javax.swing.JLabel();
-        progressBar = new rojerusan.componentes.RSProgressMaterial();
         jLabelDenegada = new javax.swing.JLabel();
         jLabelFechaD = new javax.swing.JLabel();
         text_fechaD = new javax.swing.JTextField();
         jLabelDescripcionD = new javax.swing.JLabel();
         jScrollDescripcionD = new javax.swing.JScrollPane();
         text_descripcionD = new javax.swing.JTextArea();
+        progressBar = new rojerusan.componentes.RSProgressMaterial();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setUndecorated(true);
@@ -139,7 +153,7 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
                 boton_salirActionPerformed(evt);
             }
         });
-        panelUp_ventana.add(boton_salir, new org.netbeans.lib.awtextra.AbsoluteConstraints(1370, 15, 30, 30));
+        panelUp_ventana.add(boton_salir, new org.netbeans.lib.awtextra.AbsoluteConstraints(1390, 15, 30, 30));
 
         imagen_logo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/logo_inciapp_icono.jpg"))); // NOI18N
         panelUp_ventana.add(imagen_logo, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 13, 31, 32));
@@ -156,8 +170,8 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
         panel_principal.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(26, 64, 95)));
         panel_principal.setForeground(new java.awt.Color(60, 63, 65));
         panel_principal.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
-        panel_principal.setMinimumSize(new java.awt.Dimension(1440, 1800));
-        panel_principal.setPreferredSize(new java.awt.Dimension(1440, 1800));
+        panel_principal.setMinimumSize(new java.awt.Dimension(1440, 1900));
+        panel_principal.setPreferredSize(new java.awt.Dimension(1440, 1900));
         panel_principal.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabelNuevaRegistrada.setFont(new java.awt.Font("Dialog", 1, 28)); // NOI18N
@@ -300,61 +314,118 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
         jLabelEnTramite.setFont(new java.awt.Font("Dialog", 1, 28)); // NOI18N
         jLabelEnTramite.setForeground(new java.awt.Color(47, 47, 40));
         jLabelEnTramite.setText("En Tramite");
-        panel_principal.add(jLabelEnTramite, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 840, -1, -1));
+        panel_principal.add(jLabelEnTramite, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 790, -1, -1));
 
         jLabelFechaET.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         jLabelFechaET.setForeground(new java.awt.Color(47, 47, 40));
         jLabelFechaET.setText("Fecha:");
-        panel_principal.add(jLabelFechaET, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 850, -1, -1));
+        panel_principal.add(jLabelFechaET, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 800, -1, -1));
 
         text_fechaET.setEditable(false);
         text_fechaET.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
         text_fechaET.setForeground(new java.awt.Color(60, 63, 65));
         text_fechaET.setBorder(null);
-        panel_principal.add(text_fechaET, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 850, 310, 25));
+        panel_principal.add(text_fechaET, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 800, 310, 25));
 
         jSeparator2.setBackground(new java.awt.Color(26, 64, 95));
-        panel_principal.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 940, 940, -1));
+        panel_principal.add(jSeparator2, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 870, 940, -1));
+
+        jLabelValidada.setFont(new java.awt.Font("Dialog", 1, 28)); // NOI18N
+        jLabelValidada.setForeground(new java.awt.Color(47, 47, 40));
+        jLabelValidada.setText("Validada");
+        panel_principal.add(jLabelValidada, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 890, -1, -1));
+
+        jLabelFechaV.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        jLabelFechaV.setForeground(new java.awt.Color(47, 47, 40));
+        jLabelFechaV.setText("Fecha:");
+        panel_principal.add(jLabelFechaV, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 900, -1, -1));
+
+        text_fechaV.setEditable(false);
+        text_fechaV.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
+        text_fechaV.setForeground(new java.awt.Color(60, 63, 65));
+        text_fechaV.setBorder(null);
+        panel_principal.add(text_fechaV, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 900, 310, 25));
+
+        jSeparator3.setBackground(new java.awt.Color(26, 64, 95));
+        panel_principal.add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 970, 970, -1));
 
         jLabelEnArreglo.setFont(new java.awt.Font("Dialog", 1, 28)); // NOI18N
         jLabelEnArreglo.setForeground(new java.awt.Color(47, 47, 40));
         jLabelEnArreglo.setText("En Arreglo");
-        panel_principal.add(jLabelEnArreglo, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 1010, -1, -1));
+        panel_principal.add(jLabelEnArreglo, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 990, -1, -1));
 
         jLabelFechaEA.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         jLabelFechaEA.setForeground(new java.awt.Color(47, 47, 40));
         jLabelFechaEA.setText("Fecha:");
-        panel_principal.add(jLabelFechaEA, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 1020, -1, -1));
+        panel_principal.add(jLabelFechaEA, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 1000, -1, -1));
 
         text_fechaEA.setEditable(false);
         text_fechaEA.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
         text_fechaEA.setForeground(new java.awt.Color(60, 63, 65));
         text_fechaEA.setBorder(null);
-        panel_principal.add(text_fechaEA, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 1020, 310, 25));
+        panel_principal.add(text_fechaEA, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 1000, 310, 25));
 
-        jSeparator3.setBackground(new java.awt.Color(26, 64, 95));
-        panel_principal.add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 1120, 940, -1));
+        jSeparator4.setBackground(new java.awt.Color(26, 64, 95));
+        panel_principal.add(jSeparator4, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 1070, 970, -1));
+
+        jLabelValidarArreglo.setFont(new java.awt.Font("Dialog", 1, 28)); // NOI18N
+        jLabelValidarArreglo.setForeground(new java.awt.Color(47, 47, 40));
+        jLabelValidarArreglo.setText("Validación arreglo");
+        panel_principal.add(jLabelValidarArreglo, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 1090, -1, -1));
+
+        jLabelFechaVA.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        jLabelFechaVA.setForeground(new java.awt.Color(47, 47, 40));
+        jLabelFechaVA.setText("Fecha:");
+        panel_principal.add(jLabelFechaVA, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 1100, -1, -1));
+
+        text_fechaVA.setEditable(false);
+        text_fechaVA.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
+        text_fechaVA.setForeground(new java.awt.Color(60, 63, 65));
+        text_fechaVA.setBorder(null);
+        panel_principal.add(text_fechaVA, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 1100, 310, 25));
+
+        jSeparator5.setBackground(new java.awt.Color(26, 64, 95));
+        panel_principal.add(jSeparator5, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 1170, 970, -1));
+
+        jLabelArreglada.setFont(new java.awt.Font("Dialog", 1, 28)); // NOI18N
+        jLabelArreglada.setForeground(new java.awt.Color(47, 47, 40));
+        jLabelArreglada.setText("Arreglada");
+        panel_principal.add(jLabelArreglada, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 1190, -1, -1));
+
+        jLabelFechaA.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
+        jLabelFechaA.setForeground(new java.awt.Color(47, 47, 40));
+        jLabelFechaA.setText("Fecha:");
+        panel_principal.add(jLabelFechaA, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 1200, -1, -1));
+
+        text_fechaA.setEditable(false);
+        text_fechaA.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
+        text_fechaA.setForeground(new java.awt.Color(60, 63, 65));
+        text_fechaA.setBorder(null);
+        panel_principal.add(text_fechaA, new org.netbeans.lib.awtextra.AbsoluteConstraints(660, 1200, 310, 25));
+
+        jSeparator6.setBackground(new java.awt.Color(26, 64, 95));
+        panel_principal.add(jSeparator6, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 1270, 970, -1));
 
         jLabelSolucionada.setFont(new java.awt.Font("Dialog", 1, 28)); // NOI18N
         jLabelSolucionada.setForeground(new java.awt.Color(47, 47, 40));
         jLabelSolucionada.setText("Solucionada");
-        panel_principal.add(jLabelSolucionada, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 1190, -1, -1));
+        panel_principal.add(jLabelSolucionada, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 1290, -1, -1));
 
         jLabelFechaS.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         jLabelFechaS.setForeground(new java.awt.Color(47, 47, 40));
         jLabelFechaS.setText("Fecha:");
-        panel_principal.add(jLabelFechaS, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 1290, -1, -1));
+        panel_principal.add(jLabelFechaS, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 1350, -1, -1));
 
         text_fechaS.setEditable(false);
         text_fechaS.setFont(new java.awt.Font("Dialog", 0, 16)); // NOI18N
         text_fechaS.setForeground(new java.awt.Color(60, 63, 65));
         text_fechaS.setBorder(null);
-        panel_principal.add(text_fechaS, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 1290, 310, 25));
+        panel_principal.add(text_fechaS, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 1350, 310, 25));
 
         jLabelDescripcionS.setFont(new java.awt.Font("Dialog", 1, 16)); // NOI18N
         jLabelDescripcionS.setForeground(new java.awt.Color(47, 47, 40));
         jLabelDescripcionS.setText("Descripción:");
-        panel_principal.add(jLabelDescripcionS, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 1370, -1, -1));
+        panel_principal.add(jLabelDescripcionS, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 1410, -1, -1));
 
         jScrollDescripcionS.setBackground(new java.awt.Color(240, 239, 240));
         jScrollDescripcionS.setForeground(new java.awt.Color(60, 63, 65));
@@ -372,14 +443,11 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
         text_descripcionS.setDisabledTextColor(new java.awt.Color(60, 63, 65));
         jScrollDescripcionS.setViewportView(text_descripcionS);
 
-        panel_principal.add(jScrollDescripcionS, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 1370, 310, 110));
+        panel_principal.add(jScrollDescripcionS, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 1410, 310, 110));
 
         jLabelImagenS.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabelImagenS.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/logo_inciapp.png"))); // NOI18N
-        panel_principal.add(jLabelImagenS, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 1300, 390, 450));
-
-        progressBar.setForeground(new java.awt.Color(26, 64, 95));
-        panel_principal.add(progressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 340, 100, 100));
+        panel_principal.add(jLabelImagenS, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 1350, 400, 500));
 
         jLabelDenegada.setFont(new java.awt.Font("Dialog", 1, 28)); // NOI18N
         jLabelDenegada.setForeground(new java.awt.Color(47, 47, 40));
@@ -419,6 +487,9 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
         jScrollDescripcionD.setViewportView(text_descripcionD);
 
         panel_principal.add(jScrollDescripcionD, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 930, 310, 110));
+
+        progressBar.setForeground(new java.awt.Color(26, 64, 95));
+        panel_principal.add(progressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 340, 100, 100));
 
         scrollpanel.setViewportView(panel_principal);
 
@@ -497,6 +568,7 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
         text_empleado.setVisible(false);        
         jLabelImagen.setVisible(false);
         
+        
         jSeparator1.setVisible(false);
         
         jLabelEnTramite.setVisible(false);
@@ -505,11 +577,29 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
         
         jSeparator2.setVisible(false);
         
+        jLabelValidada.setVisible(false);
+        jLabelFechaV.setVisible(false);
+        text_fechaV.setVisible(false);
+        
+        jSeparator3.setVisible(false);
+        
         jLabelEnArreglo.setVisible(false);
         jLabelFechaEA.setVisible(false);
         text_fechaEA.setVisible(false);
         
-        jSeparator3.setVisible(false);
+        jSeparator4.setVisible(false);
+        
+        jLabelValidarArreglo.setVisible(false);
+        jLabelFechaVA.setVisible(false);
+        text_fechaVA.setVisible(false);
+        
+        jSeparator5.setVisible(false);
+        
+        jLabelArreglada.setVisible(false);
+        jLabelFechaA.setVisible(false);
+        text_fechaA.setVisible(false);
+        
+        jSeparator6.setVisible(false);
         
         jLabelSolucionada.setVisible(false);
         jLabelFechaS.setVisible(false);
@@ -518,6 +608,7 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
         jScrollDescripcionS.setVisible(false);
         text_descripcionS.setVisible(false);
         jLabelImagenS.setVisible(false);  
+        
         
         jLabelDenegada.setVisible(false);
         jLabelFechaD.setVisible(false);
@@ -537,7 +628,6 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
         text_tipo.setVisible(true);     
         jLabelFecha.setVisible(true);
         text_fecha.setVisible(true);        
-        jLabelDescripcionS.setVisible(true);
         jScrollDescripcion.setVisible(true);
         text_descripcion.setVisible(true);
         jLabelDireccion.setVisible(true);
@@ -551,62 +641,8 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
         jLabelEmpleado.setVisible(true);
         text_empleado.setVisible(true);        
         jLabelImagen.setVisible(true);
-        
-        jSeparator1.setVisible(true);
-        
-        jLabelEnTramite.setVisible(true);
-        jLabelFechaET.setVisible(true);
-        text_fechaET.setVisible(true);
-        
-        jSeparator2.setVisible(true);
-        
-        jLabelEnArreglo.setVisible(true);
-        jLabelFechaEA.setVisible(true);
-        text_fechaEA.setVisible(true);
-        
-        jSeparator3.setVisible(true);
-        
-        jLabelSolucionada.setVisible(true);
-        jLabelFechaS.setVisible(true);
-        text_fechaS.setVisible(true);
-        jLabelDescripcion.setVisible(true);
-        jScrollDescripcionS.setVisible(true);
-        text_descripcionS.setVisible(true);
-        jLabelImagenS.setVisible(true);      
-    }   
     
-    public void mostrarComponentesB(){
-        jLabelNuevaRegistrada.setVisible(true);
-        jLabelNombreApellidos.setVisible(true);
-        text_nombre_apellidos.setVisible(true);
-        jLabelCorreo.setVisible(true);
-        text_correo.setVisible(true);
-        jLabelTipo.setVisible(true);
-        text_tipo.setVisible(true);     
-        jLabelFecha.setVisible(true);
-        text_fecha.setVisible(true);        
-        jLabelDescripcion.setVisible(true);
-        jScrollDescripcion.setVisible(true);
-        text_descripcion.setVisible(true);
-        jLabelDireccion.setVisible(true);
-        text_direccion.setVisible(true);
-        jLabelAdministrador.setVisible(true);
-        text_administrador.setVisible(true);
-        jLabelDepartamento.setVisible(true);
-        text_departamento.setVisible(true);
-        jLabelSupervisor.setVisible(true);
-        text_supervisor.setVisible(true);      
-        jLabelImagen.setVisible(true);
-        
-        jSeparator1.setVisible(true);
-        
-        jLabelDenegada.setVisible(true);
-        jLabelFechaD.setVisible(true);
-        text_fechaD.setVisible(true);
-        jLabelDescripcionD.setVisible(true);
-        jScrollDescripcionD.setVisible(true);
-        text_descripcionD.setVisible(true);
-    }
+    }   
     
     public void detallesIncidencia(){
         
@@ -619,10 +655,16 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
                 decoder = new BASE64Decoder();
 
                 respuestaServidor = app.protocoloMensajes("11||"+idIncidencia+"||");
+                if(respuestaServidor==null){
+                    JOptionPane.showMessageDialog(VentanaHistorialIncidencia.this, "Error en la comunicación. Vuelva a intentarlo más tarde.", "Message", 1);
+                    progressBar.setVisible(false);
+                    return null;
+                }
                 resServidor = respuestaServidor.split("\\|\\|");
                 
                 if(resServidor[0].equals("0") && resServidor[1].equals("sesionCaducada")){
                     JOptionPane.showMessageDialog(VentanaHistorialIncidencia.this, "Su sesión ha caducado", "Message", 0);
+                    vp.setVisible(false);
                     dispose();
                     VentanaLog ventanaLog = new VentanaLog();
                 }
@@ -657,16 +699,70 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
                                                     
                             ii = new ImageIcon(imageByte);
                             jLabelImagen.setIcon(ii);
-                                                        
-                            break;                            
-                        case  "EnTramite":
                             
-                            text_fechaET.setText(object.get("fecha").toString());
+                            mostrarComponentes();
+                            break;                            
+                        case  "EnTramite":                            
+                            text_fechaET.setText( object.get("fecha").toString());
+                            
+                            jSeparator1.setVisible(true);
+        
+                            jLabelEnTramite.setVisible(true);
+                            jLabelFechaET.setVisible(true);
+                            text_fechaET.setVisible(true);
+                            
+                            panel_principal.setPreferredSize(new Dimension(1440,900));
+                            break;
+                            
+                        case "Validada":                            
+                            text_fechaV.setText( object.get("fecha").toString());
+                            
+                            jSeparator2.setVisible(true);
+        
+                            jLabelValidada.setVisible(true);
+                            jLabelFechaV.setVisible(true);
+                            text_fechaV.setVisible(true);
+                            
+                            panel_principal.setPreferredSize(new Dimension(1440,1000));
                             break;
                             
                         case  "EnArreglo":
                             
-                            text_fechaEA.setText( object.get("fecha").toString());                     
+                            text_fechaEA.setText( object.get("fecha").toString());   
+                            
+                            jSeparator3.setVisible(true);
+        
+                            jLabelEnArreglo.setVisible(true);
+                            jLabelFechaEA.setVisible(true);
+                            text_fechaEA.setVisible(true);
+                            
+                            panel_principal.setPreferredSize(new Dimension(1440,1100));
+                            break;
+                            
+                        case "ValidarArreglo":
+                            
+                            text_fechaVA.setText( object.get("fecha").toString());
+                            
+                            jSeparator4.setVisible(true);
+        
+                            jLabelValidarArreglo.setVisible(true);
+                            jLabelFechaVA.setVisible(true);
+                            text_fechaVA.setVisible(true);
+                            
+                            panel_principal.setPreferredSize(new Dimension(1440,1200));
+                            break;
+                            
+                        case "Arreglada":
+                            
+                            text_fechaA.setText( object.get("fecha").toString());
+                            
+                            jSeparator5.setVisible(true);
+        
+                            jLabelArreglada.setVisible(true);
+                            jLabelFechaA.setVisible(true);
+                            text_fechaA.setVisible(true);
+                            
+                            panel_principal.setPreferredSize(new Dimension(1440,1300));
                             break;
                             
                         case "Solucionada":
@@ -680,8 +776,17 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
                             ii = new ImageIcon(imageByte);
                             jLabelImagenS.setIcon(ii);      
                             
-                            //metodo para mostrar los componentes si la incidencia ha sido solucionada
-                            mostrarComponentes();
+                            jSeparator6.setVisible(true);
+        
+                            jLabelSolucionada.setVisible(true);
+                            jLabelFechaS.setVisible(true);
+                            text_fechaS.setVisible(true);
+                            jLabelDescripcion.setVisible(true);
+                            jScrollDescripcionS.setVisible(true);
+                            text_descripcionS.setVisible(true);
+                            jLabelImagenS.setVisible(true); 
+                            
+                            panel_principal.setPreferredSize(new Dimension(1440,1900));
                             break;
                             
                         case "Denegada":
@@ -689,7 +794,16 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
                             text_descripcionD.setText( object.get("descripcion").toString());
                             
                             //metodo para mostrar solo los componentes cuando la incidencia ha sido denegada
-                            mostrarComponentesB();
+                            
+                            jSeparator1.setVisible(true);
+        
+                            jLabelDenegada.setVisible(true);
+                            jLabelFechaD.setVisible(true);
+                            text_fechaD.setVisible(true);
+                            jLabelDescripcionD.setVisible(true);
+                            jScrollDescripcionD.setVisible(true);
+                            text_descripcionD.setVisible(true);
+                            
                             panel_principal.setPreferredSize(new Dimension(1440,1080));
                             break;
                     }
@@ -708,6 +822,7 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
     private javax.swing.JButton boton_salir;
     private javax.swing.JLabel imagen_logo;
     private javax.swing.JLabel jLabelAdministrador;
+    private javax.swing.JLabel jLabelArreglada;
     private javax.swing.JLabel jLabelCorreo;
     private javax.swing.JLabel jLabelDenegada;
     private javax.swing.JLabel jLabelDepartamento;
@@ -719,10 +834,13 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
     private javax.swing.JLabel jLabelEnArreglo;
     private javax.swing.JLabel jLabelEnTramite;
     private javax.swing.JLabel jLabelFecha;
+    private javax.swing.JLabel jLabelFechaA;
     private javax.swing.JLabel jLabelFechaD;
     private javax.swing.JLabel jLabelFechaEA;
     private javax.swing.JLabel jLabelFechaET;
     private javax.swing.JLabel jLabelFechaS;
+    private javax.swing.JLabel jLabelFechaV;
+    private javax.swing.JLabel jLabelFechaVA;
     private javax.swing.JLabel jLabelImagen;
     private javax.swing.JLabel jLabelImagenS;
     private javax.swing.JLabel jLabelNombreApellidos;
@@ -730,12 +848,17 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
     private javax.swing.JLabel jLabelSolucionada;
     private javax.swing.JLabel jLabelSupervisor;
     private javax.swing.JLabel jLabelTipo;
+    private javax.swing.JLabel jLabelValidada;
+    private javax.swing.JLabel jLabelValidarArreglo;
     private javax.swing.JScrollPane jScrollDescripcion;
     private javax.swing.JScrollPane jScrollDescripcionD;
     private javax.swing.JScrollPane jScrollDescripcionS;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JSeparator jSeparator6;
     private javax.swing.JLabel nombre_app;
     private javax.swing.JPanel panelUp_ventana;
     private javax.swing.JPanel panel_principal;
@@ -750,10 +873,13 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
     private javax.swing.JTextField text_direccion;
     private javax.swing.JTextField text_empleado;
     private javax.swing.JTextField text_fecha;
+    private javax.swing.JTextField text_fechaA;
     private javax.swing.JTextField text_fechaD;
     private javax.swing.JTextField text_fechaEA;
     private javax.swing.JTextField text_fechaET;
     private javax.swing.JTextField text_fechaS;
+    private javax.swing.JTextField text_fechaV;
+    private javax.swing.JTextField text_fechaVA;
     private javax.swing.JTextField text_nombre_apellidos;
     private javax.swing.JTextField text_supervisor;
     private javax.swing.JTextField text_tipo;

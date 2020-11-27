@@ -31,24 +31,25 @@ public class VentanaLog extends JFrame {
     protected String[] resServidor;
 
     protected VentanaPrincipal ventanaPrincipal;
-    protected String correoAdmin;
+    protected String correoAdmin, ip_properties;
+    protected int puerto;
 
     public VentanaLog() {
         initComponents();
 
         app = new Aplicacion();
 
-        //Toolkit mipantalla=Toolkit.getDefaultToolkit();
-        //Dimension tamanoPantalla=mipantalla.getScreenSize();
         Border border_boton = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.white);
         boton_minimizar.setBorder(border_boton);
         boton_salir.setBorder(border_boton);
         error_log.setVisible(false);
         error_log_sesion_inciada.setVisible(false);
-        progressBar.setVisible(false);
 
         setSize(360, 450);
         this.setLocationRelativeTo(null);
+        this.setVisible(true);
+        boton_login.setVisible(false);
+        progressBar.setVisible(true);
 
         properties = new Properties();
 
@@ -62,8 +63,8 @@ public class VentanaLog extends JFrame {
             //obtenemos las propiedades que queremos (IP y PUERTO)
             String correo_properties = properties.getProperty("correo");
             String contrasena_properties = properties.getProperty("contrasena");
-            String ip_properties = properties.getProperty("ip");
-            String puerto_text_properties = properties.getProperty("puerto");
+            ip_properties = properties.getProperty("ip");
+            String puerto_text_properties = properties.getProperty("puerto");            
 
             leerArchivo.close();
 
@@ -78,20 +79,19 @@ public class VentanaLog extends JFrame {
 
             //probamos a conectarnos al servidor con la ip y el puerto introducidos en la anterior sesión si existe en nuestro properties
             if ((ip_properties != null && puerto_text_properties != null) && (!ip_properties.equals("null") && !puerto_text_properties.equals("null"))) {
-                int puerto = Integer.parseInt(puerto_text_properties);
-
-                app.conectarConServidor(ip_properties, puerto);
-
+                puerto = Integer.parseInt(puerto_text_properties);
+                if(!app.conectarConServidor(ip_properties, puerto))
+                     JOptionPane.showMessageDialog(VentanaLog.this, "No se puede establecer conexión con el servidor.", "Message", 0);
             }
+            
+            boton_login.setVisible(true);
+            progressBar.setVisible(false);
 
         } catch (FileNotFoundException ex) {
             Logger.getLogger(VentanaLog.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            //Logger.getLogger(VentanaLog.class.getName()).log(Level.SEVERE, null, ex);
             System.out.println("No se ha establecido conexión con el servidor. VentanaLog");
-        }
-
-        this.setVisible(true);
+        }  
     }
 
     @SuppressWarnings("unchecked")
@@ -103,10 +103,8 @@ public class VentanaLog extends JFrame {
         label_correo = new javax.swing.JLabel();
         label_contrasena = new javax.swing.JLabel();
         text_correo = new javax.swing.JTextField();
-        boton_servidor = new javax.swing.JButton();
         progressBar = new rojerusan.componentes.RSProgressMaterial();
         boton_login = new javax.swing.JButton();
-        boton_registrar = new javax.swing.JButton();
         text_contrasena = new javax.swing.JPasswordField();
         boton_salir = new javax.swing.JButton();
         error_log = new javax.swing.JLabel();
@@ -142,47 +140,23 @@ public class VentanaLog extends JFrame {
         label_correo.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         label_correo.setForeground(new java.awt.Color(46, 134, 193));
         label_correo.setText("Correo : ");
-        getContentPane().add(label_correo, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 250, 80, -1));
+        getContentPane().add(label_correo, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 260, 80, -1));
 
         label_contrasena.setFont(new java.awt.Font("Dialog", 1, 18)); // NOI18N
         label_contrasena.setForeground(new java.awt.Color(46, 134, 193));
         label_contrasena.setText("Contraseña :");
-        getContentPane().add(label_contrasena, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 290, 120, -1));
+        getContentPane().add(label_contrasena, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 300, 120, -1));
 
         text_correo.setBackground(new java.awt.Color(46, 134, 193));
         text_correo.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
         text_correo.setForeground(new java.awt.Color(255, 255, 255));
         text_correo.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         text_correo.setCaretColor(new java.awt.Color(255, 255, 255));
-        getContentPane().add(text_correo, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 250, 150, 30));
-
-        boton_servidor.setBackground(new java.awt.Color(127, 179, 213));
-        boton_servidor.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        boton_servidor.setForeground(new java.awt.Color(255, 255, 255));
-        boton_servidor.setText("Servidor");
-        boton_servidor.setBorder(null);
-        boton_servidor.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        boton_servidor.setMaximumSize(new java.awt.Dimension(125, 35));
-        boton_servidor.setMinimumSize(new java.awt.Dimension(125, 35));
-        boton_servidor.setPreferredSize(new java.awt.Dimension(125, 35));
-        boton_servidor.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                boton_servidorMouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                boton_servidorMouseExited(evt);
-            }
-        });
-        boton_servidor.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                boton_servidorActionPerformed(evt);
-            }
-        });
-        getContentPane().add(boton_servidor, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 90, 30));
+        getContentPane().add(text_correo, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 260, 150, 30));
 
         progressBar.setForeground(new java.awt.Color(46, 134, 193));
         progressBar.setAnchoProgress(5);
-        getContentPane().add(progressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(155, 355, 40, 40));
+        getContentPane().add(progressBar, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 380, 40, 40));
 
         boton_login.setBackground(new java.awt.Color(127, 179, 213));
         boton_login.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
@@ -194,19 +168,7 @@ public class VentanaLog extends JFrame {
                 boton_loginMouseClicked(evt);
             }
         });
-        getContentPane().add(boton_login, new org.netbeans.lib.awtextra.AbsoluteConstraints(113, 360, 130, -1));
-
-        boton_registrar.setBackground(new java.awt.Color(127, 179, 213));
-        boton_registrar.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
-        boton_registrar.setForeground(new java.awt.Color(255, 255, 255));
-        boton_registrar.setText("Registrarse");
-        boton_registrar.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
-        boton_registrar.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                boton_registrarMouseClicked(evt);
-            }
-        });
-        getContentPane().add(boton_registrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(113, 400, 130, -1));
+        getContentPane().add(boton_login, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 390, 130, -1));
 
         text_contrasena.setBackground(new java.awt.Color(46, 134, 193));
         text_contrasena.setFont(new java.awt.Font("Dialog", 0, 14)); // NOI18N
@@ -215,7 +177,7 @@ public class VentanaLog extends JFrame {
         text_contrasena.setCaretColor(new java.awt.Color(255, 255, 255));
         text_contrasena.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         text_contrasena.setDisabledTextColor(new java.awt.Color(187, 187, 187));
-        getContentPane().add(text_contrasena, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 290, 150, 30));
+        getContentPane().add(text_contrasena, new org.netbeans.lib.awtextra.AbsoluteConstraints(180, 300, 150, 30));
 
         boton_salir.setBackground(new java.awt.Color(0, 0, 51));
         boton_salir.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
@@ -240,12 +202,12 @@ public class VentanaLog extends JFrame {
         error_log.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         error_log.setForeground(new java.awt.Color(153, 0, 51));
         error_log.setText("Correo o contraseña incorrecto.");
-        getContentPane().add(error_log, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 330, -1, -1));
+        getContentPane().add(error_log, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 350, -1, -1));
 
         error_log_sesion_inciada.setFont(new java.awt.Font("Dialog", 1, 14)); // NOI18N
         error_log_sesion_inciada.setForeground(new java.awt.Color(153, 0, 51));
         error_log_sesion_inciada.setText("Ya se ha iniciado sesión con este correo");
-        getContentPane().add(error_log_sesion_inciada, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 330, -1, -1));
+        getContentPane().add(error_log_sesion_inciada, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 350, -1, -1));
 
         imagen_fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/imagenes/fondo_ventanaPrincipal.jpg"))); // NOI18N
         imagen_fondo.setPreferredSize(new java.awt.Dimension(360, 450));
@@ -294,40 +256,6 @@ public class VentanaLog extends JFrame {
         this.setState(JFrame.ICONIFIED);
     }//GEN-LAST:event_boton_minimizarMouseClicked
 
-    //      BOTON REGISTRAR
-    private void boton_registrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_registrarMouseClicked
-        if (app.getConectadoServidor()) {
-            VentanaRegistrarUsuario ventanaRegistrar = new VentanaRegistrarUsuario(this, true, app, 1);
-            ventanaRegistrar.setVisible(true);
-        } else {
-            JOptionPane.showMessageDialog(this, "Debe conectarse al servidor", "Message", 1);
-        }
-
-        boton_registrar.setEnabled(true);
-    }//GEN-LAST:event_boton_registrarMouseClicked
-
-    //      BOTON CONECTAR SERVIDOR
-    private void boton_servidorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boton_servidorActionPerformed
-
-        //comprobamos si se ha conectado al servidor automaticamente
-        if (app.getConectadoServidor()) {
-            JOptionPane.showMessageDialog(this, "Ya está conectado al servidor", "Message", 1);
-        } else {
-            ConectarServidor con = new ConectarServidor(this, true, app);
-            con.setVisible(true);
-        }
-    }//GEN-LAST:event_boton_servidorActionPerformed
-
-    private void boton_servidorMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_servidorMouseExited
-        Border border_boton = BorderFactory.createMatteBorder(1, 1, 1, 1, Color.white);
-        boton_servidor.setBorder(border_boton);
-    }//GEN-LAST:event_boton_servidorMouseExited
-
-    private void boton_servidorMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_boton_servidorMouseEntered
-        Border border_boton = BorderFactory.createMatteBorder(2, 2, 2, 2, Color.white);
-        boton_servidor.setBorder(border_boton);
-    }//GEN-LAST:event_boton_servidorMouseEntered
-
     //  MOVER VENTANA
     int xx, xy;
     private void imagen_fondoMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_imagen_fondoMousePressed
@@ -350,11 +278,15 @@ public class VentanaLog extends JFrame {
             protected Void doInBackground() throws Exception {
                 error_log.setVisible(false);
                 error_log_sesion_inciada.setVisible(false);
+                boton_login.setVisible(false);
+                progressBar.setVisible(true);
+                
+                if(!app.getConectadoServidor()){
+                    app.conectarConServidor(ip_properties, puerto);
+                }
 
                 if (app.getConectadoServidor()) {
-
-                    boton_login.setVisible(false);
-                    progressBar.setVisible(true);
+                    
 
                     boolean log_admin = true;
                     Border border_boton_rojo = BorderFactory.createMatteBorder(2, 2, 2, 2, Color.red);
@@ -388,7 +320,7 @@ public class VentanaLog extends JFrame {
                     }
 
                 } else {
-                    JOptionPane.showMessageDialog(VentanaLog.this, "Debe conectarse al servidor", "Message", 1);
+                    JOptionPane.showMessageDialog(VentanaLog.this, "No se puede establecer conexión con el servidor.", "Message", 0);
                 }
 
                 boton_login.setVisible(true);
@@ -451,6 +383,7 @@ public class VentanaLog extends JFrame {
     }
 
     // MAIN    
+    
     public static void main(String args[]) throws IOException {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -458,13 +391,11 @@ public class VentanaLog extends JFrame {
             }
         });
     }
-
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton boton_login;
     private javax.swing.JButton boton_minimizar;
-    private javax.swing.JButton boton_registrar;
     private javax.swing.JButton boton_salir;
-    private javax.swing.JButton boton_servidor;
     private javax.swing.JLabel error_log;
     private javax.swing.JLabel error_log_sesion_inciada;
     private javax.swing.JLabel imagen_fondo;

@@ -8,13 +8,15 @@ import java.util.Date;
  */
 public class RowTablaIncidencia {
     private int id;
+    private String estado;
     private Date fecha;
     private String tipo;
     private String descripcion;
     private String direccion;
 
-    public RowTablaIncidencia(int id, Date fecha, String tipo, String descripcion, String direccion){        
+    public RowTablaIncidencia(int id, String estado, Date fecha, String tipo, String descripcion, String direccion){        
         this.id = id;
+        this.estado = estado;
         this.fecha = fecha;
         this.tipo = tipo;
         this.descripcion = descripcion;
@@ -26,6 +28,14 @@ public class RowTablaIncidencia {
     }
     public void setId(int id) {
         this.id = id;
+    }
+    
+    public String getEstado(){        
+        return estado;
+    }
+    
+    public void setEstado(String estado){
+        this.estado = estado;
     }
     
     public Date getFecha(){
