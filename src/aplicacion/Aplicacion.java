@@ -291,14 +291,14 @@ public class Aplicacion {
                         enviarServidor.flush();
                         
                         time=0;
-                        while(leerServidor.available()<1 && time<5000){
+                        while(leerServidor.available()<1 && time<10000){
                             try {
                                 Thread.sleep(500);
                                 time += 500;
                             } catch (InterruptedException e) {
                             }
                         }
-                        if(time==5000){
+                        if(time==10000){
                             state = INICIO;
                             transicionNula=false;
                             return null;
@@ -320,14 +320,14 @@ public class Aplicacion {
                         enviarServidor.flush();
 
                         time=0;
-                        while(leerServidor.available()<1 && time<5000){
+                        while(leerServidor.available()<1 && time<10000){
                             try {
                                 Thread.sleep(500);
                                 time += 500;
                             } catch (InterruptedException e) {
                             }
                         }
-                        if(time==5000){
+                        if(time==10000){
                             state = INICIO;
                             transicionNula=false;
                             return null;
@@ -372,14 +372,14 @@ public class Aplicacion {
                         enviarServidor.flush();
                         
                         time=0;
-                        while(leerServidor.available()<1 && time<5000){
+                        while(leerServidor.available()<1 && time<10000){
                             try {
                                 Thread.sleep(500);
                                 time += 500;
                             } catch (InterruptedException e) {
                             }
                         }
-                        if(time==5000){
+                        if(time==10000){
                             state = INICIO;
                             transicionNula=false;
                             return null;
@@ -409,14 +409,14 @@ public class Aplicacion {
                         enviarServidor.flush();
 
                         time=0;
-                        while(leerServidor.available()<1 && time<5000){
+                        while(leerServidor.available()<1 && time<10000){
                             try {
                                 Thread.sleep(500);
                                 time += 500;
                             } catch (InterruptedException e) {
                             }
                         }
-                        if(time==5000){
+                        if(time==10000){
                             state = INICIO;
                             transicionNula=false;
                             return null;
@@ -453,14 +453,14 @@ public class Aplicacion {
                         enviarServidor.flush();
                         
                         time=0;
-                        while(leerServidor.available()<1 && time<5000){
+                        while(leerServidor.available()<1 && time<10000){
                             try {
                                 Thread.sleep(500);
                                 time += 500;
                             } catch (InterruptedException e) {
                             }
                         }
-                        if(time==5000){
+                        if(time==10000){
                             state = INICIO;
                             transicionNula=false;
                             return null;
@@ -489,14 +489,14 @@ public class Aplicacion {
                         enviarServidor.flush();
                         
                         time=0;
-                        while(leerServidor.available()<1 && time<5000){
+                        while(leerServidor.available()<1 && time<10000){
                             try {
                                 Thread.sleep(500);
                                 time += 500;
                             } catch (InterruptedException e) {
                             }
                         }
-                        if(time==5000){
+                        if(time==10000){
                             state = INICIO;
                             transicionNula=false;
                             return null;
