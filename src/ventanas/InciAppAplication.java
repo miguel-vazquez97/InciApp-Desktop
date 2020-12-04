@@ -16,9 +16,9 @@ public class InciAppAplication {
     
     public static void main(String args[]){
         
-        Properties configuracionInicio = new Properties();
-
-        try (FileInputStream leerArchivo = new FileInputStream("src/aplicacion/Configuracion.inicio.properties")) {
+        Properties configuracionInicio = new Properties(); 
+        
+        try (FileInputStream leerArchivo = new FileInputStream("Configuracion.inicio.properties")) {
             configuracionInicio.load(leerArchivo);
 
             String configuracionPuertoIP = configuracionInicio.getProperty("configuracionPuertoIp");
@@ -34,6 +34,7 @@ public class InciAppAplication {
                 registroUsuarioAdministrador.addPropertyChangeListener(new CerrarVentanaListener());
             }else{
                 VentanaLog ventanaLog = new VentanaLog();
+                ventanaLog.setVisible(true);
             }
 
         } catch (IOException ex) {
@@ -57,6 +58,7 @@ class CerrarVentanaListener implements PropertyChangeListener {
                 
             case "RegistroUsuarioAdministradorExit":                
                 VentanaLog ventanaLog = new VentanaLog();
+                ventanaLog.setVisible(true);
                 break;
         }        
     }

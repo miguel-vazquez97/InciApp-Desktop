@@ -1,0 +1,3 @@
+ventanas.RegistroUsuarioAdministrador
+ventanas.RegistroUsuarioAdministrador$2
+ventanas.RegistroUsuarioAdministrador$1

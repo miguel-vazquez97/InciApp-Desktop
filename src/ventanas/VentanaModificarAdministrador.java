@@ -317,6 +317,7 @@ public class VentanaModificarAdministrador extends javax.swing.JDialog {
                             vp.setVisible(false);
                             dispose();
                             VentanaLog ventanaLog = new VentanaLog();
+                            ventanaLog.setVisible(true);
                         }
 
                         if(resServidor[0].equals("22") && resServidor[1].equals("modificarUsuarioOk")){
@@ -367,6 +368,7 @@ public class VentanaModificarAdministrador extends javax.swing.JDialog {
                     vp.setVisible(false);
                     dispose();
                     VentanaLog ventanaLog = new VentanaLog();
+                    ventanaLog.setVisible(true);
                 }
                 
                 JSONParser parser = new JSONParser();

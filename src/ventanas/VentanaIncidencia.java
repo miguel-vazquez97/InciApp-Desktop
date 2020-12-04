@@ -382,6 +382,7 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                                 vp.setVisible(false);
                                 dispose();
                                 VentanaLog ventanaLog = new VentanaLog();
+                                ventanaLog.setVisible(true);
                             }else if(!resServidor[0].equals("9") && !resServidor[1].equals("supervisorAsignadoOk")){
                                 JOptionPane.showMessageDialog(VentanaIncidencia.this, "Supervisor no asiganado. Recarge la tabla e intentelo de nuevo", "Message", 2);
                             }
@@ -401,6 +402,7 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                                 vp.setVisible(false);
                                 dispose();
                                 VentanaLog ventanaLog = new VentanaLog();
+                                ventanaLog.setVisible(true);
                             }else{ 
                                 if(!resServidor[0].equals("11") && !resServidor[1].equals("empleadoAsignadoOk")){
                                     JOptionPane.showMessageDialog(VentanaIncidencia.this, "Empleado no asiganado. Recarge la tabla e intentelo de nuevo", "Message", 2);
@@ -450,6 +452,7 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                     vp.setVisible(false);
                     dispose();
                     VentanaLog ventanaLog = new VentanaLog();
+                    ventanaLog.setVisible(true);
                 }
                 
                 jsonArray = (JSONArray) parser.parse(incidenciaString);

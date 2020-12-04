@@ -414,6 +414,7 @@ public class VentanaIncidenciaArreglada extends javax.swing.JDialog {
                     vp.setVisible(false);
                     dispose();
                     VentanaLog ventanaLog = new VentanaLog();
+                    ventanaLog.setVisible(true);
                 }else if(resServidor[0].equals("13") && resServidor[1].equals("incidenciaSolucionadaOk")){
                     dispose();
                 }
@@ -455,6 +456,7 @@ public class VentanaIncidenciaArreglada extends javax.swing.JDialog {
                         vp.setVisible(false);
                         dispose();
                         VentanaLog ventanaLog = new VentanaLog();
+                        ventanaLog.setVisible(true);
                     }else if(resServidor[0].equals("15") && resServidor[1].equals("incidenciaDenegadaSolucionOk")){
                         dispose();
                     }
@@ -496,6 +498,7 @@ public class VentanaIncidenciaArreglada extends javax.swing.JDialog {
                     vp.setVisible(false);
                     dispose();
                     VentanaLog ventanaLog = new VentanaLog();
+                    ventanaLog.setVisible(true);
                 }
                 
                 jsonArray = (JSONArray) parser.parse(incidenciaString);

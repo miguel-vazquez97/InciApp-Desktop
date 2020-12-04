@@ -27,7 +27,7 @@ public class RegistroUsuarioAdministrador extends javax.swing.JFrame {
     private OutputStream output;
     private String respuestaServidor;
     private byte[] respuestaServidorByte;
-
+    
     public RegistroUsuarioAdministrador() {
         initComponents();
 
@@ -39,7 +39,7 @@ public class RegistroUsuarioAdministrador extends javax.swing.JFrame {
         try {
             String ip;
             int puerto;
-            try (FileInputStream leerArchivo = new FileInputStream("src/aplicacion/Configuracion.properties")) {
+            try (FileInputStream leerArchivo = new FileInputStream("Configuracion.properties")) {
                 properties.load(leerArchivo);
                 ip = properties.getProperty("ip");
                 puerto = Integer.parseInt(properties.getProperty("puerto"));
@@ -322,19 +322,19 @@ public class RegistroUsuarioAdministrador extends javax.swing.JFrame {
 
                 Properties propiedades = new Properties();
                 Date fecha;
-                try (FileInputStream leerArchivo = new FileInputStream("src/aplicacion/Configuracion.properties")) {
+                try (FileInputStream leerArchivo = new FileInputStream("Configuracion.properties")) {
                     propiedades.load(leerArchivo);
                     propiedades.setProperty("correo", correo);
                     propiedades.setProperty("contrasena", contrasena);
                     fecha = new Date();
-                    propiedades.store(new FileWriter("src/aplicacion/Configuracion.properties"), "Se actualizo la Configuracion   -   " + fecha);
+                    propiedades.store(new FileWriter("Configuracion.properties"), "Se actualizo la Configuracion   -   " + fecha);
                 }
                 
                 Properties configuracion = new Properties();
-                try (FileInputStream leerArchivoConfiguracion = new FileInputStream("src/aplicacion/Configuracion.inicio.properties")) {
+                try (FileInputStream leerArchivoConfiguracion = new FileInputStream("Configuracion.inicio.properties")) {
                     configuracion.load(leerArchivoConfiguracion);
                     configuracion.setProperty("configuracionRegistroAdmin", "false");
-                    configuracion.store(new FileWriter("src/aplicacion/Configuracion.inicio.properties"), "Se actualizo la configuracion     -   " + fecha);
+                    configuracion.store(new FileWriter("Configuracion.inicio.properties"), "Se actualizo la configuracion     -   " + fecha);
                 }
                 
                 input.close();
@@ -342,7 +342,7 @@ public class RegistroUsuarioAdministrador extends javax.swing.JFrame {
                 socket.close();
                 
                 JOptionPane.showMessageDialog(RegistroUsuarioAdministrador.this, "Fin de la instalación.", "Message", 1);
-                
+
                 firePropertyChange("RegistroUsuarioAdministradorExit", null, null);                
                 dispose();
             } else {

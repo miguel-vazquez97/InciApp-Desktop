@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
  * @author mivap
  */
 public class ConfiguracionPuertoIP extends javax.swing.JFrame {
+    
 
     public ConfiguracionPuertoIP() {
         initComponents();
@@ -138,18 +139,19 @@ public class ConfiguracionPuertoIP extends javax.swing.JFrame {
                 try (Socket socket = new Socket(ip,puerto)) {
                     Properties propiedades = new Properties();
                     Date fecha;
-                    try (FileInputStream leerArchivo = new FileInputStream("src/aplicacion/Configuracion.properties")) {
+                    try (FileInputStream leerArchivo = new FileInputStream("Configuracion.properties")) {
                         propiedades.load(leerArchivo);
                         propiedades.setProperty("ip", ip);
                         propiedades.setProperty("puerto", puerto_txt);
-                        fecha = new Date();
-                        propiedades.store(new FileWriter("src/aplicacion/Configuracion.properties"),"Se actualizo la Configuracion   -   "+fecha);
+                        fecha = new Date();                      
+                        propiedades.store(new FileWriter("Configuracion.properties"),"Se actualizo la configuracion     -   "+fecha);                    
+                        
                     }
                     Properties configuracion = new Properties();
-                    try (FileInputStream leerArchivoConfiguracion = new FileInputStream("src/aplicacion/Configuracion.inicio.properties")) {
+                    try (FileInputStream leerArchivoConfiguracion = new FileInputStream("Configuracion.inicio.properties")) {
                         configuracion.load(leerArchivoConfiguracion);
                         configuracion.setProperty("configuracionPuertoIp", "false");
-                        configuracion.store(new FileWriter("src/aplicacion/Configuracion.inicio.properties"),"Se actualizo la configuracion     -   "+fecha);
+                        configuracion.store(new FileWriter("Configuracion.inicio.properties"),"Se actualizo la configuracion     -   "+fecha);
                     }
 
                     socket.close();
@@ -158,7 +160,7 @@ public class ConfiguracionPuertoIP extends javax.swing.JFrame {
                 dispose();
 
             } catch (IOException ex) {
-                JOptionPane.showMessageDialog(ConfiguracionPuertoIP.this, "Introduzca de nuevo Puero e IP.", "Message", 0);
+                JOptionPane.showMessageDialog(ConfiguracionPuertoIP.this, "Introduzca de nuevo Puerto e IP.", "Message", 0);
                 text_ip.setText("");
                 text_puerto.setText("");
             }
@@ -174,6 +176,7 @@ public class ConfiguracionPuertoIP extends javax.swing.JFrame {
        return retValue;
     }
 
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton boton_aceptar;
     private javax.swing.JLabel label_ip;

@@ -667,6 +667,7 @@ public class VentanaHistorialIncidencia extends javax.swing.JDialog {
                     vp.setVisible(false);
                     dispose();
                     VentanaLog ventanaLog = new VentanaLog();
+                    ventanaLog.setVisible(true);
                 }
 
                 JSONParser parser = new JSONParser();

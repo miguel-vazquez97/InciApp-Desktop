@@ -849,6 +849,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
                     if (!salirPrograma) {
                         VentanaLog ventanaLog = new VentanaLog();
+                        ventanaLog.setVisible(true);
                     } else {
                         System.exit(0);
                     }
@@ -888,6 +889,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(VentanaPrincipal.this, "Su sesión ha caducado", "Message", 0);
                     dispose();
                     VentanaLog ventanaLog = new VentanaLog();
+                    ventanaLog.setVisible(true);
                 }
 
                 progressBar.setVisible(false);
