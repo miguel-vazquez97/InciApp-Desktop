@@ -441,7 +441,7 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                 JSONObject object;
                 
                 String incidenciaString = app.protocoloMensajes("5||"+idIncidencia+"||"+estado+"||");  
-                if(respuestaServidor==null){
+                if(incidenciaString==null){
                     JOptionPane.showMessageDialog(VentanaIncidencia.this, "Error en la comunicación. Vuelva a intentarlo más tarde.", "Message", 1);
                     progressBar.setVisible(false);
                     return null;

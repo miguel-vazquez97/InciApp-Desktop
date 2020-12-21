@@ -487,7 +487,7 @@ public class VentanaIncidenciaArreglada extends javax.swing.JDialog {
                 
                 String incidenciaString = app.protocoloMensajes("9||"+idIncidencia+"||");
                 
-                if(respuestaServidor==null){
+                if(incidenciaString==null){
                     JOptionPane.showMessageDialog(VentanaIncidenciaArreglada.this, "Error en la comunicación. Vuelva a intentarlo más tarde.", "Message", 1);
                     progressBar.setVisible(false);
                     return null;
