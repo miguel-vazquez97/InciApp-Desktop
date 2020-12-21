@@ -470,6 +470,7 @@ public class VentanaGestionarUsuario extends javax.swing.JDialog {
                     JOptionPane.showMessageDialog(VentanaGestionarUsuario.this, "Su sesión ha caducado", "Message", 0);
                     dispose();
                     VentanaLog ventanaLog = new VentanaLog();
+                    ventanaLog.setVisible(true);
                 }
 
                 if(resServidor[0].equals("24") && resServidor[1].equals("eliminarUsuarioOk")){                    
@@ -565,6 +566,7 @@ public class VentanaGestionarUsuario extends javax.swing.JDialog {
                             JOptionPane.showMessageDialog(VentanaGestionarUsuario.this, "Su sesión ha caducado", "Message", 0);
                             dispose();
                             VentanaLog ventanaLog = new VentanaLog();
+                            ventanaLog.setVisible(true);
                         }
 
                         if(resServidor[0].equals("22") && resServidor[1].equals("modificarUsuarioOk")){
@@ -611,6 +613,7 @@ public class VentanaGestionarUsuario extends javax.swing.JDialog {
                     vp.setVisible(false);
                     dispose();
                     VentanaLog ventanaLog = new VentanaLog();
+                    ventanaLog.setVisible(true);
                 }
                 
                 BASE64Decoder decoder = new BASE64Decoder();
@@ -680,6 +683,7 @@ public class VentanaGestionarUsuario extends javax.swing.JDialog {
                     vp.setVisible(false);
                     dispose();
                     VentanaLog ventanaLog = new VentanaLog();
+                    ventanaLog.setVisible(true);
                 }
                 
 
@@ -716,6 +720,7 @@ public class VentanaGestionarUsuario extends javax.swing.JDialog {
                             JOptionPane.showMessageDialog(VentanaGestionarUsuario.this, "Su sesión ha caducado", "Message", 0);
                             dispose();
                             VentanaLog ventanaLog = new VentanaLog();
+                            ventanaLog.setVisible(true);
                         }
 
                         JSONParser parser = new JSONParser();

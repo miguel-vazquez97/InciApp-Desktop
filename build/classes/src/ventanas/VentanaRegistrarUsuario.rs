@@ -1,0 +1,8 @@
+ventanas.VentanaRegistrarUsuario
+ventanas.VentanaRegistrarUsuario$7
+ventanas.VentanaRegistrarUsuario$6
+ventanas.VentanaRegistrarUsuario$5
+ventanas.VentanaRegistrarUsuario$4
+ventanas.VentanaRegistrarUsuario$3
+ventanas.VentanaRegistrarUsuario$2
+ventanas.VentanaRegistrarUsuario$1

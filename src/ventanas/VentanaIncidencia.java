@@ -382,6 +382,7 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                                 vp.setVisible(false);
                                 dispose();
                                 VentanaLog ventanaLog = new VentanaLog();
+                                ventanaLog.setVisible(true);
                             }else if(!resServidor[0].equals("9") && !resServidor[1].equals("supervisorAsignadoOk")){
                                 JOptionPane.showMessageDialog(VentanaIncidencia.this, "Supervisor no asiganado. Recarge la tabla e intentelo de nuevo", "Message", 2);
                             }
@@ -401,6 +402,7 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                                 vp.setVisible(false);
                                 dispose();
                                 VentanaLog ventanaLog = new VentanaLog();
+                                ventanaLog.setVisible(true);
                             }else{ 
                                 if(!resServidor[0].equals("11") && !resServidor[1].equals("empleadoAsignadoOk")){
                                     JOptionPane.showMessageDialog(VentanaIncidencia.this, "Empleado no asiganado. Recarge la tabla e intentelo de nuevo", "Message", 2);
@@ -439,7 +441,7 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                 JSONObject object;
                 
                 String incidenciaString = app.protocoloMensajes("5||"+idIncidencia+"||"+estado+"||");  
-                if(respuestaServidor==null){
+                if(incidenciaString==null){
                     JOptionPane.showMessageDialog(VentanaIncidencia.this, "Error en la comunicación. Vuelva a intentarlo más tarde.", "Message", 1);
                     progressBar.setVisible(false);
                     return null;
@@ -450,6 +452,7 @@ public class VentanaIncidencia extends javax.swing.JDialog {
                     vp.setVisible(false);
                     dispose();
                     VentanaLog ventanaLog = new VentanaLog();
+                    ventanaLog.setVisible(true);
                 }
                 
                 jsonArray = (JSONArray) parser.parse(incidenciaString);

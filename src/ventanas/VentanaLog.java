@@ -56,7 +56,7 @@ public class VentanaLog extends JFrame {
         try {
 
             //abrimos el archivo
-            leerArchivo = new FileInputStream("src/aplicacion/Configuracion.properties");
+            leerArchivo =  new FileInputStream("Configuracion.properties");
             //leemos las propiedades
             properties.load(leerArchivo);
 
@@ -348,14 +348,14 @@ public class VentanaLog extends JFrame {
                 app.setNombreAdmin(resServidor[2]);
 
                 //abrimos el archivo
-                leerArchivo = new FileInputStream("src/aplicacion/Configuracion.properties");
+                leerArchivo = new FileInputStream("Configuracion.properties");
                 //leemos las propiedades
                 properties.load(leerArchivo);
                 //damos valor a las propiedades de nuestro archivo Configuracion
                 properties.setProperty("correo", correo);
                 properties.setProperty("contrasena", contrasena);
                 //grabamos las modificaciones de las propiedades
-                properties.store(new FileWriter("src/aplicacion/Configuracion.properties"), null);
+                properties.store(new FileWriter("Configuracion.properties"), null);
 
                 leerArchivo.close();
 
@@ -383,7 +383,7 @@ public class VentanaLog extends JFrame {
     }
 
     // MAIN    
-    
+/*
     public static void main(String args[]) throws IOException {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
@@ -391,7 +391,7 @@ public class VentanaLog extends JFrame {
             }
         });
     }
-    
+*/
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton boton_login;
     private javax.swing.JButton boton_minimizar;

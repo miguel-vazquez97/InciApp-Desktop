@@ -429,6 +429,7 @@ public class VentanaRegistrarUsuario extends javax.swing.JDialog {
             vp.setVisible(false);
             dispose();
             VentanaLog ventanaLog = new VentanaLog();
+            ventanaLog.setVisible(true);
         }else if(resServidor[0].equals("1") && resServidor[1].equals("registrarUsuarioOk")){
             dispose();
         }else{
@@ -458,6 +459,7 @@ public class VentanaRegistrarUsuario extends javax.swing.JDialog {
                     vp.setVisible(false);
                     dispose();
                     VentanaLog ventanaLog = new VentanaLog();
+                    ventanaLog.setVisible(true);
                 }
                 
                 JSONParser parser = new JSONParser();
